@@ -2,8 +2,22 @@ import React, { FormEventHandler, FormEvent } from "react";
 import { type Task } from "wasp/entities";
 import { type AuthUser, getUsername } from "wasp/auth";
 import { logout } from "wasp/client/auth";
-import { createTask, updateTask, deleteTasks, useQuery, getTasks } from "wasp/client/operations";
+import {
+  createTask,
+  updateTask,
+  deleteTasks,
+  useQuery,
+  getTasks,
+} from "wasp/client/operations";
 import waspLogo from "./waspLogo.png";
+import { useConfigStore } from "./store/config";
+import { parentDispatch } from "./utils/parentDispatch";
+import { MessageListener } from "./components/MessageListener";
+import { Views } from "./views/Views";
+import { TRANSCRIPT_MESSAGE_ACTION } from "@humeai/voice-embed-react";
+import { VoiceProvider } from "@humeai/voice-react";
+import { AnimatePresence } from "framer-motion";
+import { ComponentProps } from "react";
 
 import "./Main.css";
 
@@ -13,93 +27,29 @@ export const MainPage = ({ user }: { user: AuthUser }) => {
   if (isLoading) return "Loading...";
   if (error) return "Error: " + error;
 
-  const completed = tasks?.filter((task) => task.isDone).map((task) => task.id);
+  const apiKey = import.meta.env.HUME_API_KEY || "";
+
+  const dispatchMessage: ComponentProps<typeof VoiceProvider>["onMessage"] = (
+    message
+  ) => {
+    if (
+      message.type === "user_message" ||
+      message.type === "assistant_message"
+    ) {
+      parentDispatch(TRANSCRIPT_MESSAGE_ACTION(message));
+    }
+  };
 
   return (
-    <main>
-      <img src={waspLogo} alt="wasp logo" />
-      {user && (
-        <h1>
-          {getUsername(user)}
-          {`'s tasks :)`}
-        </h1>
-      )}
-      <NewTaskForm />
-      {tasks && <TasksList tasks={tasks} />}
-      <div className="buttons">
-        <button
-          className="logout"
-          onClick={() => void deleteTasks(completed ?? [])}
+    <>
+      <AnimatePresence mode={"wait"}>
+        <VoiceProvider
+          auth={{ type: "apiKey", value: apiKey }}
+          onMessage={dispatchMessage}
         >
-          Delete completed
-        </button>
-        <button className="logout" onClick={logout}>
-          Logout
-        </button>
-      </div>
-    </main>
+          <Views />
+        </VoiceProvider>
+      </AnimatePresence>
+    </>
   );
 };
-
-function Todo({ id, isDone, description }: Task) {
-  const handleIsDoneChange: FormEventHandler<HTMLInputElement> = async (
-    event
-  ) => {
-    try {
-      await updateTask({
-        id,
-        isDone: event.currentTarget.checked,
-      });
-    } catch (err: any) {
-      window.alert("Error while updating task " + err?.message);
-    }
-  };
-
-  return (
-    <li>
-      <span className="todo-item">
-        <input
-          type="checkbox"
-          id={id.toString()}
-          checked={isDone}
-          onChange={handleIsDoneChange}
-        />
-        <span>{description}</span>
-        <button onClick={() => void deleteTasks([id])}>Delete</button>
-      </span>
-    </li>
-  );
-}
-
-function TasksList({ tasks }: { tasks: Task[] }) {
-  if (tasks.length === 0) return <p>No tasks yet.</p>;
-  return (
-    <ol className="tasklist">
-      {tasks.map((task, idx) => (
-        <Todo {...task} key={idx} />
-      ))}
-    </ol>
-  );
-}
-
-function NewTaskForm() {
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    try {
-      const description = event.currentTarget.description.value;
-      console.log(description);
-      event.currentTarget.reset();
-      await createTask({ description });
-    } catch (err: any) {
-      window.alert("Error: " + err?.message);
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <input name="description" type="text" defaultValue="" />
-      <input type="submit" value="Create task" />
-    </form>
-  );
-}
