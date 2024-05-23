@@ -1,11 +1,11 @@
-import { useRef, useEffect, FC, ElementRef, useLayoutEffect } from 'react';
-import { useVoice } from '@humeai/voice-react';
-import { AvatarState, AvatarVisualization } from './viz';
-import { EmotionScores } from '@humeai/voice-embed-react';
+import { useRef, useEffect, FC, ElementRef, useLayoutEffect } from "react";
+import { useVoice } from "@humeai/voice-react";
+import { AvatarState, AvatarVisualization } from "./viz";
+import { EmotionScores } from "@humeai/voice-embed-react";
 
 export type WebGLAvatarProps = {
-  fft: ReturnType<typeof useVoice>['fft'];
-  isPlaying: ReturnType<typeof useVoice>['isPlaying'];
+  fft: ReturnType<typeof useVoice>["fft"];
+  isPlaying: ReturnType<typeof useVoice>["isPlaying"];
   prosody: EmotionScores;
   width: number;
   height: number;
@@ -18,7 +18,7 @@ export const WebGLAvatar: FC<WebGLAvatarProps> = ({
   width,
   height,
 }) => {
-  const container = useRef<ElementRef<'div'>>(null);
+  const container = useRef<ElementRef<"div">>(null);
   const viz = useRef<AvatarVisualization | null>(null);
 
   const initialWidth = useRef(width);
@@ -63,8 +63,15 @@ export const WebGLAvatar: FC<WebGLAvatarProps> = ({
 
   return (
     <div
-      className={'pointer-events-none absolute isolate'}
-      style={{ width: `${width}px`, height: `${height}px` }}
+      className={"pointer-events-none absolute isolate"}
+      style={{
+        width: `${width}px`,
+        height: `${height}px`,
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+      }}
       ref={container}
     />
   );

@@ -13,16 +13,17 @@ export const IntroScreen = ({
   return (
     <motion.div
       className={cn(
-        "absolute inset-0 flex flex-col items-center justify-center px-12 gap-8"
+        "flex flex-col items-center justify-center h-screen px-12 gap-8"
       )}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, translateY: -4 }}
       transition={{ duration: 2 }}
     >
       <h2 className="text-center text-3xl">
-        <span>Meet EVI, our </span>
-        <CircledText>empathic</CircledText>
-        <span> AI voice</span>
+        <span>Hi, I'm  </span>
+        <CircledText> Anxious  </CircledText>
+        {/* <br /> */}
+        <span> Love.</span>
       </h2>
       <div className="w-fit">
         <motion.div

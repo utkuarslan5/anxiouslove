@@ -10,7 +10,7 @@ export const CircledText = (props: { children: React.ReactNode }) => {
           viewBox="0 0 251 57"
           fill="none"
           className={
-            'absolute inset-0 z-[-1] size-full translate-y-[8%] scale-[105%]'
+            'absolute inset-0 z-[-1] size-full translate-y-[4%] scale-[115%]'
           }
         >
           <motion.path

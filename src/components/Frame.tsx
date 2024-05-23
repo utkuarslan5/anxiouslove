@@ -11,7 +11,7 @@ const frameStyles = cva(
   [
     'rounded-[25px]',
     'backdrop-blur-[50px]',
-    'absolute bottom-0 right-0',
+    // 'absolute bottom-0 right-0',
     'text-black',
     'transition-colors',
     'outline outline-2 -outline-offset-2 outline-white/80',

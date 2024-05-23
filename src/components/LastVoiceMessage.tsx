@@ -5,6 +5,7 @@ import { Circle } from "lucide-react";
 import { FC, useRef } from "react";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { cn } from "../utils";
+import { Stack, Box } from "@chakra-ui/react";
 
 type ProsodyScore = { name: string; score: string };
 
@@ -72,18 +73,21 @@ export const LastVoiceMessage: FC<LastVoiceMessageProps> = ({
 
   return (
     <div
-      className={cn("pointer-events-none absolute px-6 text-center", "top-48")}
+      className={cn(
+        "pointer-events-none flex justify-center w-full",
+        "top-2/3 left-1/2 -translate-x-1/2 -translate-y-2/3 absolute"
+      )}
     >
-      <LayoutGroup>
+      <Stack direction={["column", "row"]} pt={[48, 24]} align='stretch'>
         {sortedEmotions.map((emotion) => {
           return (
-            <EmotionLabel
-              key={`emotion-wrapper-${emotion.name}`}
-              {...emotion}
-            />
+            <Box key={`emotion-wrapper-${emotion.name}`} width="100%">
+              <EmotionLabel {...emotion} />
+            </Box>
           );
         })}
-      </LayoutGroup>
+
+      </Stack>
     </div>
   );
 };
