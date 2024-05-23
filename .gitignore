@@ -1,7 +1,4 @@
-*/.wasp/
-*/.env.server
-*/.env.client
-*/node_modules
-*/migrations
-*/.DS_Store
-.DS_Store
+/.wasp/
+/.env.server
+/.env.client
+/node_modules
