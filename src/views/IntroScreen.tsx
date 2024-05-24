@@ -59,7 +59,7 @@ export const IntroScreen = ({
             isLoading={isConnecting}
             loadingText={"Connecting..."}
           >
-            Begin Call
+            Start Call
           </Button>
         </motion.div>
       </div>
