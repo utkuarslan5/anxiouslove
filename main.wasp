@@ -2,7 +2,10 @@ app anxiouslove {
   wasp: {
     version: "^0.13.0"
   },
-  title: "anxiouslove",
+  title: "Anxious Love",
+  head: [
+    "<link rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\" />"
+  ],
   client: {
     rootComponent: import { Layout } from "@src/Layout.jsx",
   },
