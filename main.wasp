@@ -9,6 +9,9 @@ app anxiouslove {
   client: {
     rootComponent: import { Layout } from "@src/Layout.jsx",
   },
+  db: {
+    system: PostgreSQL,
+  },
   auth: {
     userEntity: User,
     methods: {
@@ -59,6 +62,14 @@ query getTasks {
   // We tell Wasp that this query is doing something with the `Task` entity. With that, Wasp will
   // automatically refresh the results of this query when tasks change.
   entities: [Task]
+}
+
+query getPosthogConfig {
+  fn: import { getPosthogConfig } from "@src/tasks/queries",
+}
+
+query getHumeConfig {
+  fn: import { getHumeConfig } from "@src/tasks/queries",
 }
 
 action createTask {
