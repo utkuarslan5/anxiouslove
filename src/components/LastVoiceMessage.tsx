@@ -78,7 +78,7 @@ export const LastVoiceMessage: FC<LastVoiceMessageProps> = ({
         "top-2/3 left-1/2 -translate-x-1/2 -translate-y-2/3 absolute"
       )}
     >
-      <Stack direction={["column", "row"]} pt={[48, 24]} align='stretch'>
+      <Stack direction={["column", "row"]} pt={[64, 24]} align='stretch'>
         {sortedEmotions.map((emotion) => {
           return (
             <Box key={`emotion-wrapper-${emotion.name}`} width="100%">

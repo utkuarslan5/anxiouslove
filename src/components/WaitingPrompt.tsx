@@ -4,11 +4,10 @@ import { useState, useEffect } from "react";
 import { Box, VStack } from "@chakra-ui/react";
 
 const prompts = [
-  "Who can I talk to when I feel overwhelmed?",
-  "Does my partner love me?",
-  "Am I too needy?",
-  "How can I cope with abandonment?",
-  "How to express my emotions?",
+  "What can you do?",
+  "Who is this for?",
+  "What is your purpose?",
+  "Where can I learn more?",
 ];
 
 export const WaitingPrompt = () => {

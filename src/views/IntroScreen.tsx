@@ -20,9 +20,10 @@ export const IntroScreen = ({
       transition={{ duration: 2 }}
     >
       <h2 className="text-center text-3xl">
-        <span>Hi, I'm  </span>
-        <CircledText> Anxious  </CircledText>
-        {/* <br /> */}
+        <span>
+          Hi, I'm <br className="sm:hidden" />
+        </span>
+        <CircledText> Anxious </CircledText>
         <span> Love.</span>
       </h2>
       <div className="w-fit">
@@ -58,7 +59,7 @@ export const IntroScreen = ({
             isLoading={isConnecting}
             loadingText={"Connecting..."}
           >
-            Start Conversation
+            Begin Call
           </Button>
         </motion.div>
       </div>

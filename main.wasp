@@ -14,7 +14,7 @@ app anxiouslove {
       //gitHub: {}, // https://wasp-lang.dev/docs/integrations/github
       //email: {} // https://wasp-lang.dev/docs/guides/email-auth
     },
-    onAuthFailedRedirectTo: "/login",
+    onAuthFailedRedirectTo: "/",
   }
 }
 
@@ -36,7 +36,7 @@ psl=}
 
 route RootRoute { path: "/", to: MainPage }
 page MainPage {
-  authRequired: true,
+  authRequired: false,
   component: import { MainPage } from "@src/MainPage"
 }
 
