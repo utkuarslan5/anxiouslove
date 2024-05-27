@@ -22,32 +22,17 @@ import { HamburgerIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import "./Main.css";
 
 export const Layout = ({ children }) => {
-
-  // useEffect(() => {
-  //   const script = document.createElement("script");
-  //   script.type = "text/javascript";
-  //   script.async = true;
-  //   script.innerHTML = `
-  //     window.$sleek=[];
-  //     window.SLEEK_PRODUCT_ID=291162644;
-  //     (function(){
-  //       d=document;
-  //       s=d.createElement("script");
-  //       s.src="https://client.sleekplan.com/sdk/e.js";
-  //       s.async=1;
-  //       d.getElementsByTagName("head")[0].appendChild(s);
-  //     })();
-  //   `;
-  //   document.head.appendChild(script);
-  // }, []);
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.defer = true;
+    script.dataset.domain = "demo.anxiouslove.me";
+    script.src = "https://plausible.io/js/script.js";
+    document.head.appendChild(script);
+  }, []);
 
   return (
     <ChakraProvider>
-     
-      <Box>
-        {children}
-      </Box>
-      
+      <Box>{children}</Box>
     </ChakraProvider>
   );
 };

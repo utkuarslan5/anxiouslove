@@ -10,6 +10,10 @@ export const IntroScreen = ({
   onConnect: () => void;
   isConnecting: boolean;
 }) => {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+
   return (
     <motion.div
       className={cn(
@@ -19,50 +23,58 @@ export const IntroScreen = ({
       animate={{ opacity: 1, translateY: -4 }}
       transition={{ duration: 2 }}
     >
-      <h2 className="text-center text-3xl">
-        <span>
-          Hi, I'm <br className="sm:hidden" />
-        </span>
-        <CircledText> Anxious </CircledText>
-        <span> Love.</span>
-      </h2>
-      <div className="w-fit">
-        <motion.div
-          variants={{
-            initial: {
-              y: "100%",
-              opacity: 0,
-            },
-            enter: {
-              y: 0,
-              opacity: 1,
-              transition: {
-                opacity: {
-                  duration: 0.7,
-                  ease: "easeInOut",
+      {isMobile ? (
+        <h2 className="text-center text-3xl">
+          Our demo currently only supports desktop.
+        </h2>
+      ) : (
+        <>
+          <h2 className="text-center text-3xl">
+            <span>
+              Hi, I'm <br className="sm:hidden" />
+            </span>
+            <CircledText> Anxious </CircledText>
+            <span> Love.</span>
+          </h2>
+          <div className="w-fit">
+            <motion.div
+              variants={{
+                initial: {
+                  y: "100%",
+                  opacity: 0,
                 },
-                y: {
-                  duration: 1.1,
-                  ease: "easeInOut",
+                enter: {
+                  y: 0,
+                  opacity: 1,
+                  transition: {
+                    opacity: {
+                      duration: 0.7,
+                      ease: "easeInOut",
+                    },
+                    y: {
+                      duration: 1.1,
+                      ease: "easeInOut",
+                    },
+                  },
                 },
-              },
-            },
-            exit: {
-              opacity: 0,
-            },
-          }}
-        >
-          <Button
-            onClick={() => {
-              onConnect();
-            }}
-            isLoading={isConnecting}
-            loadingText={"Connecting..."}
-          >
-            Start Call
-          </Button>
-        </motion.div>
-      </div>
+                exit: {
+                  opacity: 0,
+                },
+              }}
+            >
+              <Button
+                onClick={() => {
+                  onConnect();
+                }}
+                isLoading={isConnecting}
+                loadingText={"Connecting..."}
+              >
+                Start Call
+              </Button>
+            </motion.div>
+          </div>
+        </>
+      )}
     </motion.div>
   );
 };
