@@ -12,17 +12,21 @@ export const IntroScreen = ({
   onConnect: () => void;
   isConnecting: boolean;
 }) => {
-  const isMobile =/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
     );
   const toast = useToast();
+  const mobileToastId = "mobile-toast";
 
   useEffect(() => {
-    if (isMobile) {
+    if (isMobile && !toast.isActive(mobileToastId)) {
       toast({
+        id: mobileToastId,
         icon: "🎉",
         title: "Our mobile demo is still experimental",
-        description: "Please let us know how it goes via utkuvonarslan@gmail.com",
+        description:
+          "Please let us know how it goes via utkuvonarslan@gmail.com",
         status: "warning",
         duration: 8000,
         isClosable: true,
