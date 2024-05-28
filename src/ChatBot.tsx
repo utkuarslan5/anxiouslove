@@ -16,28 +16,24 @@ import { Box } from "@chakra-ui/react";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 
-console.log(import.meta.env);
-
-if (typeof window !== "undefined") {
-  posthog.init(import.meta.env["REACT_APP_PUBLIC_POSTHOG_KEY"], {
-    api_host:
-      import.meta.env["REACT_APP_PUBLIC_POSTHOG_HOST"] || "https://eu.i.posthog.com",
-    loaded: (posthog) => {
-      if (import.meta.env.NODE_ENV === "development") posthog.debug(); // debug mode in development
-    },
-    capture_pageview: true,
-    disable_session_recording: false,
-    enable_recording_console_log: true,
-    property_blacklist: [],
-  });
-}
 
 export const ChatBot = () => {
-  const apiKey = import.meta.env.REACT_APP_HUME_API_KEY;
-  const configId = import.meta.env.REACT_APP_HUME_CONFIG_ID;
+  if (typeof window !== "undefined") {
 
-  posthog.capture('$pageview')
-  
+
+    posthog.init("phc_QWCQnocWvXO4UW30UUmZusN3OoPwucgo3VELxKq9AOR", {
+      api_host: "https://eu.i.posthog.com",
+      loaded: (posthog) => {
+        if (import.meta.env.NODE_ENV === "development") posthog.debug(); // debug mode in development
+      },
+      capture_pageview: true,
+      disable_session_recording: false,
+      enable_recording_console_log: true,
+      property_blacklist: [],
+    });
+    posthog.capture("$pageview");
+  }
+
   const dispatchMessage: ComponentProps<typeof VoiceProvider>["onMessage"] = (
     message
   ) => {
@@ -53,15 +49,13 @@ export const ChatBot = () => {
     }
   };
 
-  
-
   return (
     <PostHogProvider client={posthog}>
       <Box>
         <VoiceProvider
-          auth={{ type: "apiKey", value: apiKey }}
+          auth={{ type: "apiKey", value: "UGr0q0DHsFcJT1EufOcjI5glJVArdLTlxkYZqO0tGbysfsfs" }}
           onMessage={dispatchMessage}
-          configId={configId}
+          configId={"b14e74c9-7854-40da-bfdd-7ed07d229c91"}
           onError={(err) => {
             posthog.capture("api_error", { error: err });
           }}
