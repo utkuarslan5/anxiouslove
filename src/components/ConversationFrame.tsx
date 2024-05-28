@@ -48,7 +48,7 @@ export const ConversationFrame: FC<ConversationFrameProps> = ({
         {children}
       </motion.div>
 
-      <Box zIndex={10} p={2}>
+      <Box zIndex={10} p={2} pb={16}>
         <HStack spacing={4} justifyContent="center" pb={[4, 16]} pt={0}>
           {status.value === "connected" && (
             <Tooltip.Provider delayDuration={400} skipDelayDuration={500}>

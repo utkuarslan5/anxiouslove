@@ -1,8 +1,9 @@
 import { usePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSpring } from "@react-spring/three";
 import { WebGLBurst } from "../WebGLBurst";
 import { useAnimateGLColor } from "../WebGLBurst/useAnimateGLColor";
+import * as THREE from "three";
 
 export const WebGLEmotionBursts = ({
   prosody,

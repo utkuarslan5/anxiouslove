@@ -23,7 +23,7 @@ export const WebGLBurst: FC<WebGLBurstProps> = ({
   b,
 }) => {
   const viewport = useThree((state) => state.viewport);
-
+  
   return (
     <mesh>
       <planeGeometry args={[viewport.width, viewport.height]} />

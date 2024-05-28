@@ -1,7 +1,8 @@
 import { extend } from "@react-three/fiber";
 import { shaderMaterial } from "@react-three/drei";
 import { animated } from "@react-spring/three";
-
+import { useRef, useEffect } from "react";
+import * as THREE from "three";
 const WebGLBurstShaderMaterial = shaderMaterial(
   {
     u_offsetX: 0.5,

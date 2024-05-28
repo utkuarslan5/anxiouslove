@@ -1,9 +1,8 @@
-import { motion } from 'framer-motion';
-import { useRef, ComponentRef, FC } from 'react';
-import { useButton, mergeProps } from 'react-aria';
-import { useSafeMotion } from '../utils/useSafeMotion';
-import { ArrowUpRight } from 'lucide-react';
-
+import { motion } from "framer-motion";
+import { useRef, ComponentRef, FC } from "react";
+import { useButton, mergeProps } from "react-aria";
+import { useSafeMotion } from "../utils/useSafeMotion";
+import { ArrowUpRight } from "lucide-react";
 
 export type ExpandButtonProps = {
   onPress: () => void;
@@ -17,7 +16,7 @@ export const ExpandButton: FC<ExpandButtonProps> = ({ onPress }) => {
         onPress();
       },
     },
-    ExpandButtonRef,
+    ExpandButtonRef
   );
 
   const buttonTransition = useSafeMotion({
@@ -38,12 +37,12 @@ export const ExpandButton: FC<ExpandButtonProps> = ({ onPress }) => {
     <motion.div
       ref={ExpandButtonRef}
       className={
-        'z-10 grid size-[36px] cursor-pointer place-content-center rounded-full bg-tan-600/20 text-black transition-colors hover:bg-tan-600/50'
+        "z-10 grid size-[36px] cursor-pointer place-content-center rounded-full bg-black text-tan-400 transition-colors hover:bg-tan-700"
       }
       {...mergeProps(ExpandButtonProps, buttonTransition)}
     >
-      <ArrowUpRight className={'size-5'} />
-      <span className="sr-only">Learn more</span>
+      <ArrowUpRight className={"size-5"} />
+      <span className="sr-only">Pre-order</span>
     </motion.div>
   );
 };

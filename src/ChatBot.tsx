@@ -16,11 +16,8 @@ import { Box } from "@chakra-ui/react";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 
-
 export const ChatBot = () => {
   if (typeof window !== "undefined") {
-
-
     posthog.init("phc_QWCQnocWvXO4UW30UUmZusN3OoPwucgo3VELxKq9AOR", {
       api_host: "https://eu.i.posthog.com",
       loaded: (posthog) => {
@@ -53,7 +50,10 @@ export const ChatBot = () => {
     <PostHogProvider client={posthog}>
       <Box>
         <VoiceProvider
-          auth={{ type: "apiKey", value: "UGr0q0DHsFcJT1EufOcjI5glJVArdLTlxkYZqO0tGbysfsfs" }}
+          auth={{
+            type: "apiKey",
+            value: "UGr0q0DHsFcJT1EufOcjI5glJVArdLTlxkYZqO0tGbysfsfs",
+          }}
           onMessage={dispatchMessage}
           configId={"b14e74c9-7854-40da-bfdd-7ed07d229c91"}
           onError={(err) => {
