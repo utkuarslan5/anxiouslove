@@ -47,7 +47,7 @@ export const IntroScreen = ({
         <>
           <h2 className="text-center text-3xl">
             <span>
-              Hi, I'm Eliza-
+              Hi, I'm AnxiousLove-
               <br className="sm:hidden" />
             </span>
             <span> </span>

@@ -35,7 +35,7 @@ export const WaitingPrompt = () => {
         <VStack spacing={[18]} pb={16}>
           <Box>
             <div className={cn("font-mono uppercase text-black/50")}>
-              Try saying...
+              Ask me...
             </div>
           </Box>
           <Box>
