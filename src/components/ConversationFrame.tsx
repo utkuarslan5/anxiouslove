@@ -125,12 +125,11 @@ export const ConversationFrame: FC<ConversationFrameProps> = ({
                     Pre-order
                   </Tooltip.Content>
                 </Tooltip.Root>
+                <Box>
+                  <CloseButton onPress={() => onClose()} />
+                </Box>
             </Tooltip.Provider>
           )}
-
-          <Box>
-            <CloseButton onPress={() => onClose()} />
-          </Box>
         </HStack>
       </Box>
     </motion.div>

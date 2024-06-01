@@ -47,13 +47,13 @@ export const IntroScreen = ({
         <>
           <h2 className="text-center text-3xl">
             <span>
-              Hi, I'm AnxiousLove-
+              Hi, I'm Anxious Love
               <br className="sm:hidden" />
             </span>
             <span> </span>
             <br />
             <CircledText> Emotional</CircledText>
-            <span> AI.</span>
+            <span> AI</span>
           </h2>
           <div className="w-fit">
             <motion.div

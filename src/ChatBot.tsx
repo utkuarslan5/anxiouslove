@@ -1,4 +1,4 @@
-import React, { ComponentProps } from "react";
+import React, { ComponentProps, useState } from "react";
 import { type AuthUser, getUsername } from "wasp/auth";
 import { logout } from "wasp/client/auth";
 import { createTask, updateTask, deleteTasks } from "wasp/client/operations";
@@ -15,21 +15,29 @@ import { AnimatePresence } from "framer-motion";
 import { Box } from "@chakra-ui/react";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
+import {
+  UserTranscriptMessage,
+  AssistantTranscriptMessage,
+} from "@humeai/voice";
+
+// if (typeof window !== "undefined") {
+//   posthog.init("phc_QWCQnocWvXO4UW30UUmZusN3OoPwucgo3VELxKq9AOR", {
+//     api_host: "https://eu.i.posthog.com",
+//     loaded: (posthog) => {
+//       if (import.meta.env.NODE_ENV === "development") posthog.debug(); // debug mode in development
+//     },
+//     capture_pageview: true,
+//     disable_session_recording: false,
+//     enable_recording_console_log: true,
+//     property_blacklist: [],
+//   });
+//   posthog.capture("$pageview");
+// }
+
+type MessageType = UserTranscriptMessage | AssistantTranscriptMessage;
 
 export const ChatBot = () => {
-  if (typeof window !== "undefined") {
-    posthog.init("phc_QWCQnocWvXO4UW30UUmZusN3OoPwucgo3VELxKq9AOR", {
-      api_host: "https://eu.i.posthog.com",
-      loaded: (posthog) => {
-        if (import.meta.env.NODE_ENV === "development") posthog.debug(); // debug mode in development
-      },
-      capture_pageview: true,
-      disable_session_recording: false,
-      enable_recording_console_log: true,
-      property_blacklist: [],
-    });
-    posthog.capture("$pageview");
-  }
+  const [messages, setMessages] = useState<MessageType[]>([]);
 
   const dispatchMessage: ComponentProps<typeof VoiceProvider>["onMessage"] = (
     message
@@ -42,6 +50,7 @@ export const ChatBot = () => {
       message.type === "user_message" ||
       message.type === "assistant_message"
     ) {
+      setMessages((prevMessages) => [...prevMessages, message as MessageType]);
       parentDispatch(TRANSCRIPT_MESSAGE_ACTION(message));
     }
   };
@@ -63,7 +72,7 @@ export const ChatBot = () => {
             posthog.capture("socket_closed", { event: e });
           }}
         >
-          <Views />
+          <Views messages={messages}/>
         </VoiceProvider>
       </Box>
     </PostHogProvider>

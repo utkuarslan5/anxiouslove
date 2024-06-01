@@ -11,6 +11,7 @@ type ProsodyScore = { name: string; score: string };
 
 type LastVoiceMessageProps = {
   lastVoiceMessage: ReturnType<typeof useVoice>["lastVoiceMessage"];
+  position?: "default" | "top";
 };
 
 const EmotionLabel = (prosody: ProsodyScore) => {
@@ -61,6 +62,7 @@ const EmotionLabel = (prosody: ProsodyScore) => {
 
 export const LastVoiceMessage: FC<LastVoiceMessageProps> = ({
   lastVoiceMessage,
+  position = "default",
 }) => {
   const prosody = lastVoiceMessage?.models.prosody?.scores ?? {};
   const sortedEmotions: ProsodyScore[] = Object.entries(prosody)
@@ -74,11 +76,12 @@ export const LastVoiceMessage: FC<LastVoiceMessageProps> = ({
   return (
     <div
       className={cn(
-        "pointer-events-none flex justify-center w-full",
-        "top-2/3 left-1/2 -translate-x-1/2 -translate-y-2/3 absolute"
+        position === "default"
+          ? "pointer-events-none flex justify-center w-full top-2/3 left-1/2 -translate-x-1/2 -translate-y-2/3 absolute"
+          : "flex justify-center w-full -translate-y-1/3"
       )}
     >
-      <Stack direction={["column", "row"]} pt={[64, 24]} align='stretch'>
+      <Stack direction={["column", "row"]} pt={position === "default" ? [64, 24] : [16, 8]} align="stretch">
         {sortedEmotions.map((emotion) => {
           return (
             <Box key={`emotion-wrapper-${emotion.name}`} width="100%">
@@ -86,8 +89,8 @@ export const LastVoiceMessage: FC<LastVoiceMessageProps> = ({
             </Box>
           );
         })}
-
       </Stack>
     </div>
+
   );
 };
