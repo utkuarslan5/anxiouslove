@@ -6,13 +6,30 @@ import {
   VStack,
   Heading,
   HStack,
-  Flex
+  Flex,
+  Icon
 } from '@chakra-ui/react';
+import { Clock, MessageCircle } from 'lucide-react';
 import { expressionColors } from 'expression-colors';
 import { Bar, Radar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler);
+
+type MessageType = {
+  type: string;
+  message: {
+    role: string;
+    content: string;
+  };
+  models: {
+    prosody: {
+      scores: Record<string, number>;
+    };
+  };
+  from_text: boolean;
+  receivedAt: string;
+};
 
 const emotionGroups = {
   'Positive High Arousal': [
@@ -41,9 +58,9 @@ const emotionGroups = {
   ]
 };
 
-const calculateGroupAverages = (sums) => {
-  const groupSums = {};
-  const groupCounts = {};
+const calculateGroupAverages = (sums: Record<string, number>) => {
+  const groupSums: Record<string, number> = {};
+  const groupCounts: Record<string, number> = {};
 
   // Initialize group sums and counts
   Object.keys(emotionGroups).forEach(group => {
@@ -71,25 +88,41 @@ const calculateGroupAverages = (sums) => {
 };
 
 export const EmotionPlot = () => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<MessageType[]>([]);
+  const [callDuration, setCallDuration] = useState<string>('');
 
   useEffect(() => {
     fetch('/conversation.json')
       .then(response => response.json())
-      .then(data => setMessages(data))
+      .then(data => {
+        setMessages(data);
+        calculateCallDuration(data);
+      })
       .catch(error => console.error('Error fetching conversation data:', error));
   }, []);
 
-  const filterAndExtractScores = (type) => messages
+  const calculateCallDuration = (data: MessageType[]) => {
+    if (data.length > 0) {
+      const firstTimestamp = new Date(data[0].receivedAt).getTime();
+      const lastTimestamp = new Date(data[data.length - 1].receivedAt).getTime();
+      const durationInMs = lastTimestamp - firstTimestamp;
+      const durationInMinutes = Math.floor(durationInMs / 60000);
+      const seconds = Math.floor((durationInMs % 60000) / 1000);
+      const durationString = `${durationInMinutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+      setCallDuration(durationString);
+    }
+  };
+
+  const filterAndExtractScores = (type: string) => messages
     .filter(message => message.type === type && message.models?.prosody?.scores)
     .map(message => message.models.prosody.scores);
 
   const userEmotions = filterAndExtractScores('user_message');
 
-  const calculateMetrics = (emotions) => {
-    const sums = {};
-    const counts = {};
-    const peaks = {};
+  const calculateMetrics = (emotions: Record<string, number>[]) => {
+    const sums: Record<string, number> = {};
+    const counts: Record<string, number> = {};
+    const peaks: Record<string, number> = {};
 
     emotions.forEach(scores => {
       Object.keys(scores).forEach(emotion => {
@@ -117,7 +150,7 @@ export const EmotionPlot = () => {
 
   const userMetrics = calculateMetrics(userEmotions);
 
-  const renderEmotionData = (data, title, key, metricKey) => (
+  const renderEmotionData = (data: any[], title: string, key: string, metricKey: string) => (
     <VStack align="stretch" spacing={4} key={key}>
       <Heading size="sm">{title}</Heading>
       {data.map(item => {
@@ -147,9 +180,9 @@ export const EmotionPlot = () => {
     </VStack>
   );
 
-  const getEmotionAverages = (messages) => {
-    const sums = {};
-    const counts = {};
+  const getEmotionAverages = (messages: Record<string, number>[]) => {
+    const sums: Record<string, number> = {};
+    const counts: Record<string, number> = {};
 
     messages.forEach(scores => {
       Object.keys(scores).forEach(emotion => {
@@ -173,18 +206,18 @@ export const EmotionPlot = () => {
   const firstThreeAverages = getEmotionAverages(firstThreeMessages);
   const lastThreeAverages = getEmotionAverages(lastThreeMessages);
 
-  const createBarData = (data, label) => ({
-    labels: data.map(item => item.emotion),
+  const createBarData = (averages: any[]) => ({
+    labels: averages.map(item => item.emotion),
     datasets: [{
-      label: label,
-      data: data.map(item => item.average),
-      backgroundColor: data.map(item => expressionColors[item.emotion]?.hex || 'gray'),
+      label: 'Average Emotion Scores',
+      data: averages.map(item => item.average),
+      backgroundColor: averages.map(item => expressionColors[item.emotion]?.hex || 'gray'),
       borderRadius: 5
     }]
   });
 
   const barOptions = {
-    indexAxis: 'y',
+    indexAxis: 'y' as const,
     scales: {
       x: {
         beginAtZero: true,
@@ -197,7 +230,7 @@ export const EmotionPlot = () => {
     }
   };
 
-  const createRadarData = (groupAverages) => ({
+  const createRadarData = (groupAverages: Record<string, number>) => ({
     labels: Object.keys(groupAverages),
     datasets: [{
       label: 'Emotion Sums',
@@ -215,36 +248,44 @@ export const EmotionPlot = () => {
     },
     elements: {
       line: {
-        tension: 0.4 // Add this line to create a bezier curve effect
+        tension: 0.9 // Add this line to create a bezier curve effect
+      }
+    },
+    plugins: {
+      legend: {
+        display: false // Hide the legend
       }
     }
   };
+  
 
   const groupAverages = calculateGroupAverages(userMetrics.sums);
 
   return (
     <VStack spacing={8} p={5}>
       <Heading>Call Summary</Heading>
-      <Text>Only up to the most recent 100 messages are included in call summary metrics.</Text>
-      <Text>Duration: 00:00:14</Text>
-      <Heading size="md">User</Heading>
-      <Text>2 messages</Text>
+      <HStack spacing={4} align="center">
+        <Icon as={MessageCircle} boxSize={6} />
+        <Text>{messages.length} messages</Text>
+        <Icon as={Clock} boxSize={6} />
+        <Text>{callDuration ? `${callDuration} minutes` : 'Calculating duration...'}</Text>
+      </HStack>
       <HStack spacing={8} align="start">
         {renderEmotionData(userMetrics.averages.slice(0, 3), "Top Averages", "averages", "average")}
         {renderEmotionData(userMetrics.highestPeaks.slice(0, 3), "Highest Peaks", "peaks", "peak")}
       </HStack>
-      <Flex direction="row" justify="center" align="center" width="100%">
+      <Flex direction="row" justify="center" align="center" width="80%">
         <Box width="50%">
-          <Heading size="sm" textAlign="center">First 3 Messages</Heading>
-          <Bar data={createBarData(firstThreeAverages, 'First 3 Messages')} options={barOptions} />
+          <Heading size="sm" textAlign="center">Starting Emotions</Heading>
+          <Bar data={createBarData(firstThreeAverages)} options={barOptions} />
         </Box>
         <Box width="50%">
-          <Heading size="sm" textAlign="center">Last 3 Messages</Heading>
-          <Bar data={createBarData(lastThreeAverages, 'Last 3 Messages')} options={barOptions} />
+          <Heading size="sm" textAlign="center">After Chat</Heading>
+          <Bar data={createBarData(lastThreeAverages)} options={barOptions} />
         </Box>
       </Flex>
-      <Box width="100%">
-        <Heading size="sm" textAlign="center">Emotion Sums Across the Conversation</Heading>
+      <Box width="50%">
+        <Heading size="sm" textAlign="center">Overall Emotional State</Heading>
         <Radar data={createRadarData(groupAverages)} options={radarOptions} />
       </Box>
     </VStack>
