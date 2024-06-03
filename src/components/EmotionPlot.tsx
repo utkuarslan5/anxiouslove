@@ -1,96 +1,146 @@
-import React from 'react';
-import Plot from 'react-plotly.js';
-import { expressionColors } from 'expression-colors';
-import { isExpressionColor } from '../utils/isExpressionColor';
-import { UserTranscriptMessage, AssistantTranscriptMessage } from '@humeai/voice';
+import React, { useState, useEffect } from 'react';
+import { VStack, HStack, Flex, Heading, Text } from '@chakra-ui/react';
+import {
+  UserTranscriptMessage,
+  AssistantTranscriptMessage,
+} from '@humeai/voice';
+import BarChart from './BarChart';
+import EmotionProgress from './EmotionProgress';
 
 type MessageType = UserTranscriptMessage | AssistantTranscriptMessage;
 
-interface EmotionPlotProps {
-  messages: MessageType[];
-}
+export const EmotionPlot: React.FC = () => {
+  const [messages, setMessages] = useState<MessageType[]>([]);
 
-const EmotionPlot: React.FC<EmotionPlotProps> = ({ messages }) => {
-  // Filter user messages
-  const userMessages = messages.filter(
-    (message): message is UserTranscriptMessage => message.type === 'user_message'
-  );
+  useEffect(() => {
+    fetch('/conversation.json')
+      .then((response) => response.json())
+      .then((data) => setMessages(data))
+      .catch((error) => console.error('Error fetching conversation data:', error));
+  }, []);
 
-  // Extract emotions from user messages
-  const emotions = userMessages.map((message) =>
-    Object.entries(message.models.prosody?.scores || {}).reduce((acc, [name, score]) => {
-      acc[name] = score;
-      return acc;
-    }, {} as Record<string, number>)
-  );
+  const filterAndExtractScores = (type: string) =>
+    messages
+      .filter((message): message is UserTranscriptMessage => message.type === type && message.models?.prosody?.scores !== undefined)
+      .map((message) => message.models.prosody.scores);
 
-  // Get top 5 emotions
-  const emotionCounts = emotions.flatMap(Object.keys).reduce((acc, emotion) => {
-    acc[emotion] = (acc[emotion] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const userEmotions = filterAndExtractScores('user_message');
 
-  const top5Emotions = Object.entries(emotionCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([emotion]) => emotion);
+  const calculateMetrics = (emotions: Record<string, number>[]) => {
+    const sums: Record<string, number> = {};
+    const counts: Record<string, number> = {};
+    const peaks: Record<string, number> = {};
 
-  // Line Plot
-  const lineData = top5Emotions.map((emotionName) => ({
-    x: userMessages.map((_, index) => index),
-    y: emotions.map((emotion) => emotion[emotionName] || 0),
-    mode: 'lines' as const,
-    name: emotionName,
-    line: {
-      color: expressionColors[emotionName]?.hex || 'gray',
-    },
-  }));
+    emotions.forEach((scores) => {
+      Object.keys(scores).forEach((emotion) => {
+        sums[emotion] = (sums[emotion] || 0) + scores[emotion];
+        counts[emotion] = (counts[emotion] || 0) + 1;
+        peaks[emotion] = Math.max(peaks[emotion] || 0, scores[emotion]);
+      });
+    });
 
-  const lineLayout = {
-    title: 'Emotional Changes over Messages (Line Plot)',
-    xaxis: { title: 'Message Index' },
-    yaxis: { title: 'Emotion Score' },
+    const averages = Object.keys(sums).map((emotion) => ({
+      emotion,
+      average: sums[emotion] / counts[emotion],
+    }));
+
+    const highestPeaks = Object.keys(peaks).map((emotion) => ({
+      emotion,
+      peak: peaks[emotion],
+    }));
+
+    averages.sort((a, b) => b.average - a.average);
+    highestPeaks.sort((a, b) => b.peak - a.peak);
+
+    return { averages, highestPeaks };
   };
 
-  // Stacked Area Plot
-  const areaData = top5Emotions.map((emotionName) => ({
-    x: userMessages.map((_, index) => index),
-    y: emotions.map((emotion) => emotion[emotionName] || 0),
-    mode: 'none' as const,
-    name: emotionName,
-    fill: 'tonexty',
-    fillcolor: expressionColors[emotionName]?.hex || 'gray',
-  }));
+  const userMetrics = calculateMetrics(userEmotions);
 
-  const areaLayout = {
-    title: 'Emotional Changes over Messages (Stacked Area Plot)',
-    xaxis: { title: 'Message Index' },
-    yaxis: { title: 'Emotion Score' },
+  const getEmotionAverages = (messages: Record<string, number>[]) => {
+    const sums: Record<string, number> = {};
+    const counts: Record<string, number> = {};
+
+    messages.forEach((scores) => {
+      Object.keys(scores).forEach((emotion) => {
+        sums[emotion] = (sums[emotion] || 0) + scores[emotion];
+        counts[emotion] = (counts[emotion] || 0) + 1;
+      });
+    });
+
+    const averages = Object.keys(sums).map((emotion) => ({
+      emotion,
+      average: sums[emotion] / counts[emotion],
+    }));
+
+    averages.sort((a, b) => b.average - a.average);
+    return averages.slice(0, 15); // Top 15 emotions
   };
 
-  // Heatmap
-  const heatmapData = [{
-    x: userMessages.map((_, index) => index),
-    y: top5Emotions,
-    z: top5Emotions.map((emotionName) =>
-      emotions.map((emotion) => emotion[emotionName] || 0)
-    ),
-    type: 'heatmap' as const,
-    colorscale: 'Viridis',
-  }];
+  const firstThreeMessages = userEmotions.slice(0, 3);
+  const lastThreeMessages = userEmotions.slice(-3);
 
-  const heatmapLayout = {
-    title: 'Emotional Distribution over Messages (Heatmap)',
-    xaxis: { title: 'Message Index' },
-    yaxis: { title: 'Emotion' },
+  const firstThreeAverages = getEmotionAverages(firstThreeMessages);
+  const lastThreeAverages = getEmotionAverages(lastThreeMessages);
+
+  const combineEmotionData = (
+    firstAverages: { emotion: string; average: number }[],
+    lastAverages: { emotion: string; average: number }[]
+  ) => {
+    const combined: Record<string, { first: number; last: number }> = {};
+    firstAverages.forEach((item) => {
+      combined[item.emotion] = { first: item.average, last: 0 };
+    });
+    lastAverages.forEach((item) => {
+      if (combined[item.emotion]) {
+        combined[item.emotion].last = item.average;
+      } else {
+        combined[item.emotion] = { first: 0, last: item.average };
+      }
+    });
+    return Object.entries(combined).map(([emotion, values]) => ({
+      emotion,
+      first: values.first,
+      last: values.last,
+    }));
   };
+
+  const combinedEmotionData = combineEmotionData(firstThreeAverages, lastThreeAverages);
 
   return (
-    <div>
-      <Plot data={lineData} layout={lineLayout} />
-      {/* <Plot data={areaData} layout={areaLayout} /> */}
-      <Plot data={heatmapData} layout={heatmapLayout} />
-    </div>
+    <VStack spacing={8} p={5}>
+      <Heading>Call Summary</Heading>
+      <Text>Only up to the most recent 100 messages are included in call summary metrics.</Text>
+      <Text>Duration: 00:00:14</Text>
+      <Heading size="md">User</Heading>
+      <Text>2 messages</Text>
+      <HStack spacing={8} align="start">
+        <EmotionProgress
+          data={userMetrics.averages.slice(0, 3)}
+          title="Top Averages"
+          key="averages"
+          metricKey="average"
+        />
+        <EmotionProgress
+          data={userMetrics.highestPeaks.slice(0, 3)}
+          title="Highest Peaks"
+          key="peaks"
+          metricKey="peak"
+        />
+      </HStack>
+      <Flex direction="row" justify="center" align="center" width="100%">
+        <BarChart
+          data={combinedEmotionData}
+          title="First 3 Messages"
+          key="first"
+        />
+        <BarChart
+          data={combinedEmotionData}
+          title="Last 3 Messages"
+          key="last"
+        />
+      </Flex>
+    </VStack>
   );
 };
 

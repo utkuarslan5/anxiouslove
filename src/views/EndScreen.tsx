@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { Box, VStack } from "@chakra-ui/react";
 import { Button } from "../components/Button";
+import { useState } from "react";
 import {
   UserTranscriptMessage,
   AssistantTranscriptMessage,
@@ -10,7 +11,15 @@ import { calculateAverageEmotionMessage } from "../utils";
 import { motion } from "framer-motion";
 import { cn } from "../utils";
 import { CircledText } from "../components/CircledText";
-import EmotionPlot from "../components/EmotionPlot"; // Import the EmotionPlot component
+import EmotionPlot from "../components/EmotionPlot";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@chakra-ui/react";
 
 type MessageType = UserTranscriptMessage | AssistantTranscriptMessage;
 
@@ -18,13 +27,14 @@ export const EndScreen: FC<{
   messages: MessageType[];
   onTryAgain: () => void;
 }> = ({ messages, onTryAgain }) => {
-  // Filter user messages
+  const [isOpen, setIsOpen] = useState(false);
+  const [email, setEmail] = useState("");
+
   const userMessages = messages.filter(
     (message): message is UserTranscriptMessage =>
       message.type === "user_message"
   );
 
-  // Calculate the average emotion message
   const averageEmotionMessage = calculateAverageEmotionMessage(userMessages);
 
   return (
@@ -35,7 +45,7 @@ export const EndScreen: FC<{
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, translateY: -4 }}
       transition={{ duration: 2 }}
-    >
+    >{(
       <Box>
         <VStack pt={0} spacing={4} align="center">
           <h2 className="text-center text-2xl">
@@ -47,7 +57,6 @@ export const EndScreen: FC<{
               position="top"
             />
           </Box>
-          {/* <EmotionPlot messages={messages} /> Add the EmotionPlot component */}
           <motion.div
             variants={{
               initial: {
@@ -74,20 +83,23 @@ export const EndScreen: FC<{
             }}
           >
             <Button
-              dataAttributes={{
-                "data-tally-open": "mVZR5N",
-                "data-tally-layout": "modal",
-                "data-tally-width": "377",
-                "data-tally-align-left": "1",
-                "data-tally-hide-title": "1",
-                "data-tally-emoji-animation": "none",
-              }}
+              // dataAttributes={{
+              //   "data-tally-open": "mVZR5N",
+              //   "data-tally-layout": "modal",
+              //   "data-tally-width": "377",
+              //   "data-tally-align-left": "1",
+              //   "data-tally-hide-title": "1",
+              //   "data-tally-emoji-animation": "none",
+              // }}
+              onClick={() => setIsOpen(true)}
             >
               Get summary
             </Button>
+             
           </motion.div>
         </VStack>
       </Box>
+      )}
     </motion.div>
   );
 };
