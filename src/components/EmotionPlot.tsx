@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Text,
@@ -7,29 +7,23 @@ import {
   Heading,
   HStack,
   Flex,
+  Button,
   Icon
 } from '@chakra-ui/react';
+import {
+  UserTranscriptMessage,
+  AssistantTranscriptMessage,
+} from "@humeai/voice";
 import { Clock, MessageCircle } from 'lucide-react';
 import { expressionColors } from 'expression-colors';
 import { Bar, Radar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler } from 'chart.js';
+import html2canvas from 'html2canvas';
+import { saveAs } from 'file-saver';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler);
 
-type MessageType = {
-  type: string;
-  message: {
-    role: string;
-    content: string;
-  };
-  models: {
-    prosody: {
-      scores: Record<string, number>;
-    };
-  };
-  from_text: boolean;
-  receivedAt: string;
-};
+type MessageType = UserTranscriptMessage | AssistantTranscriptMessage;
 
 const emotionGroups = {
   'Positive High Arousal': [
@@ -48,11 +42,11 @@ const emotionGroups = {
     'Sadness', 'Boredom', 'Tiredness', 'Disgust', 'Shame', 'Guilt', 
     'Doubt', 'Contempt'
   ],
-  'Complex/Contemplative Emotions': [
+  'Complex/Contemplative': [
     'Contemplation', 'Confusion', 'Realization', 'Entrancement', 
     'Desire', 'Craving', 'Concentration', 'Adoration'
   ],
-  'Social/Relational Emotions': [
+  'Social/Relational': [
     'Sympathy', 'Empathic Pain', 'Envy', 'Pride', 'Romance', 'Shame', 
     'Relief', 'Awkwardness'
   ]
@@ -62,13 +56,11 @@ const calculateGroupAverages = (sums: Record<string, number>) => {
   const groupSums: Record<string, number> = {};
   const groupCounts: Record<string, number> = {};
 
-  // Initialize group sums and counts
   Object.keys(emotionGroups).forEach(group => {
     groupSums[group] = 0;
     groupCounts[group] = 0;
   });
 
-  // Sum the emotions for each group
   Object.entries(sums).forEach(([emotion, sum]) => {
     Object.entries(emotionGroups).forEach(([group, emotions]) => {
       if (emotions.includes(emotion)) {
@@ -78,7 +70,6 @@ const calculateGroupAverages = (sums: Record<string, number>) => {
     });
   });
 
-  // Calculate the average for each group
   const groupAverages = {};
   Object.keys(groupSums).forEach(group => {
     groupAverages[group] = groupCounts[group] > 0 ? groupSums[group] / groupCounts[group] : 0;
@@ -90,6 +81,7 @@ const calculateGroupAverages = (sums: Record<string, number>) => {
 export const EmotionPlot = () => {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [callDuration, setCallDuration] = useState<string>('');
+  const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch('/conversation.json')
@@ -115,7 +107,7 @@ export const EmotionPlot = () => {
 
   const filterAndExtractScores = (type: string) => messages
     .filter(message => message.type === type && message.models?.prosody?.scores)
-    .map(message => message.models.prosody.scores);
+    .map(message => message.models?.prosody?.scores);
 
   const userEmotions = filterAndExtractScores('user_message');
 
@@ -153,32 +145,35 @@ export const EmotionPlot = () => {
   const renderEmotionData = (data: any[], title: string, key: string, metricKey: string) => (
     <VStack align="stretch" spacing={4} key={key}>
       <Heading size="sm">{title}</Heading>
-      {data.map(item => {
-        const fillColor = expressionColors[item.emotion]?.hex || 'gray';
-        const backgroundColor = `${fillColor}33`; // Adjust opacity
-        return (
-          <Box key={item.emotion}>
-            <HStack justify="space-between" align="center">
-              <Text>{item.emotion}</Text>
-              <Text>{item[metricKey] !== undefined ? item[metricKey].toFixed(3) : 'N/A'}</Text>
-            </HStack>
-            <Progress
-              value={item[metricKey] !== undefined ? item[metricKey] * 100 : 0}
-              height="10px"
-              borderRadius="5px"
-              bg={backgroundColor}
-              sx={{
-                '& > div': {
-                  borderRadius: '5px',
-                  backgroundColor: fillColor,
-                }
-              }}
-            />
-          </Box>
-        );
-      })}
+      
+        {data.map(item => {
+          const fillColor = expressionColors[item.emotion]?.hex || 'gray';
+          const backgroundColor = `${fillColor}33`; // Adjust opacity
+    
+          return (
+            <Box key={item.emotion}>
+              <HStack justifyContent="space-between" alignItems="center" pb={2}>
+                <Text>{item.emotion}</Text>
+                <Text>{item[metricKey] !== undefined ? item[metricKey].toFixed(3) : 'N/A'}</Text>
+              </HStack>
+              <Progress
+                value={item[metricKey] !== undefined ? item[metricKey] * 100 : 0}
+                height="10px"
+                borderRadius="5px"
+                bg={backgroundColor}
+                sx={{
+                  '& > div': {
+                    borderRadius: '5px',
+                    backgroundColor: fillColor,
+                  }
+                }}
+              />
+            </Box>
+          );
+        })}
     </VStack>
   );
+  
 
   const getEmotionAverages = (messages: Record<string, number>[]) => {
     const sums: Record<string, number> = {};
@@ -197,7 +192,7 @@ export const EmotionPlot = () => {
     }));
 
     averages.sort((a, b) => b.average - a.average);
-    return averages.slice(0, 10); // Top 10 emotions
+    return averages.slice(0, 5); // Top 5 emotions
   };
 
   const firstThreeMessages = userEmotions.slice(0, 3);
@@ -248,7 +243,7 @@ export const EmotionPlot = () => {
     },
     elements: {
       line: {
-        tension: 0.9 // Add this line to create a bezier curve effect
+        tension: 0.4 // Add this line to create a bezier curve effect
       }
     },
     plugins: {
@@ -257,12 +252,23 @@ export const EmotionPlot = () => {
       }
     }
   };
-  
 
   const groupAverages = calculateGroupAverages(userMetrics.sums);
 
+  const downloadImage = async () => {
+    const input = chartRef.current;
+    if (input) {
+      const canvas = await html2canvas(input);
+      canvas.toBlob((blob) => {
+        if (blob) {
+          saveAs(blob, "emotion_plot.png");
+        }
+      });
+    }
+  };
+
   return (
-    <VStack spacing={8} p={5}>
+    <VStack spacing={8} p={5} ref={chartRef} width={['100%', '80%', '60%']} align="center" maxW="800px" mx="auto">
       <Heading>Call Summary</Heading>
       <HStack spacing={4} align="center">
         <Icon as={MessageCircle} boxSize={6} />
@@ -270,24 +276,27 @@ export const EmotionPlot = () => {
         <Icon as={Clock} boxSize={6} />
         <Text>{callDuration ? `${callDuration} minutes` : 'Calculating duration...'}</Text>
       </HStack>
-      <HStack spacing={8} align="start">
+      <HStack spacing={8} align="center" justify="center" wrap="wrap">
         {renderEmotionData(userMetrics.averages.slice(0, 3), "Top Averages", "averages", "average")}
         {renderEmotionData(userMetrics.highestPeaks.slice(0, 3), "Highest Peaks", "peaks", "peak")}
       </HStack>
-      <Flex direction="row" justify="center" align="center" width="80%">
-        <Box width="50%">
+      <Flex direction={['column', 'row']} justify="center" align="center" width="100%">
+        <Box width={['100%', '45%']} mb={['8', '0']}>
           <Heading size="sm" textAlign="center">Starting Emotions</Heading>
-          <Bar data={createBarData(firstThreeAverages)} options={barOptions} />
+          <Bar data={createBarData(firstThreeAverages)} options={barOptions} width={250} height={200} /> 
         </Box>
-        <Box width="50%">
-          <Heading size="sm" textAlign="center">After Chat</Heading>
-          <Bar data={createBarData(lastThreeAverages)} options={barOptions} />
+        <Box width={['100%', '45%']} mt={['8', '0']}>
+          <Heading size="sm" textAlign="center">After conversation</Heading>
+          <Bar data={createBarData(lastThreeAverages)} options={barOptions} width={250} height={200} /> 
         </Box>
       </Flex>
-      <Box width="50%">
-        <Heading size="sm" textAlign="center">Overall Emotional State</Heading>
-        <Radar data={createRadarData(groupAverages)} options={radarOptions} />
+      <Box width="100%"> 
+        <Heading size="sm" textAlign="center">Emotional State</Heading>
+        <Radar data={createRadarData(groupAverages)} options={radarOptions} width={300} height={300} /> 
       </Box>
+      <Button onClick={downloadImage} colorScheme="blue">
+        Download as Image
+      </Button>
     </VStack>
   );
 };
