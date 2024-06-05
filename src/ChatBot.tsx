@@ -1,11 +1,6 @@
 import React, { ComponentProps, useState } from "react";
 import { type AuthUser, getUsername } from "wasp/auth";
 import { logout } from "wasp/client/auth";
-import { createTask, updateTask, deleteTasks } from "wasp/client/operations";
-import waspLogo from "./waspLogo.png";
-import { useConfigStore } from "./store/config";
-import { useLayoutStore } from "./store/layout";
-import { Frame } from "./components/Frame";
 import { parentDispatch } from "./utils/parentDispatch";
 import { MessageListener } from "./components/MessageListener";
 import { Views } from "./views/Views";

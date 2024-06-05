@@ -1,52 +1,57 @@
 import { type Task } from "wasp/entities";
 import { HttpError } from "wasp/server";
-import { type CreateTask, type UpdateTask, type DeleteTasks } from "wasp/server/operations";
+import { type SendEmailWithImage } from "wasp/server/operations";
+import fetch from "node-fetch";
 
-type CreateArgs = Pick<Task, "description">;
-
-export const createTask: CreateTask<CreateArgs, Task> = async (
-  { description },
-  context
-) => {
-  if (!context.user) {
-    throw new HttpError(401);
-  }
-
-  return context.entities.Task.create({
-    data: {
-      description,
-      user: { connect: { id: context.user.id } },
-    },
-  });
+type SendEmailArgs = {
+  email: string;
+  imageData: string;
 };
 
-type UpdateArgs = Pick<Task, "id" | "isDone">;
+export const sendEmailWithImage: SendEmailWithImage<
+  SendEmailArgs,
+  void
+> = async ({ email, imageData }, context) => {
+  const base64ImageData = imageData.split(",")[1]; // Remove the data:image/png;base64, part if present
 
-export const updateTask: UpdateTask<UpdateArgs> = async (
-  { id, isDone },
-  context
-) => {
-  if (!context.user) {
-    throw new HttpError(401);
-  }
-
-  return context.entities.Task.update({
-    where: {
-      id,
-    },
-    data: { isDone },
-  });
-};
-
-export const deleteTasks: DeleteTasks<Task["id"][]> = async (
-  idsToDelete,
-  context
-) => {
-  return context.entities.Task.deleteMany({
-    where: {
-      id: {
-        in: idsToDelete,
+  const requestBody = {
+    from: { email: "hey@anxiouslove.me" },
+    to: [{ email }],
+    subject: "Emotional Summary",
+    html: `
+      <img src='cid:emotion_plot.png' alt='Emotion Plot'/>
+      <p>p.s. The making of this product took 100+ hours, with someone dedicating their full time, and your demo cost us about $0.20 per minute. We kindly ask you to pledge €5 to continue supporting this project.<a href="https://buy.stripe.com/4gwaFhf3Hc3T1he3cc">Click here to pledge</a> Also, I would love it if you reply to this email with your testimonial. That also really helps. And if you have a family member or a friend suffering from anxiety, why not share with them?</p>
+      <p>Live bold, love deep, and peace ✌🏽🕊</p>️
+    `,
+    attachments: [
+      {
+        filename: "emotion_plot.png",
+        content: base64ImageData,
+        disposition: "inline",
+        content_id: "emotion_plot.png",
       },
+    ],
+  };
+
+
+  const response = await fetch("https://api.mailersend.com/v1/email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest",
+      Authorization:
+        `Bearer ${process.env.MAILERSEND_BEARER_KEY}`,
     },
+    body: JSON.stringify(requestBody),
   });
+
+  if (!response.ok) {
+    const responseBody = await response.text();
+    console.log("Response Status:", response.status);
+    console.log("Response Body:", responseBody);
+    throw new HttpError(
+      response.status,
+      `Failed to send email: ${responseBody}`
+    );
+  }
 };

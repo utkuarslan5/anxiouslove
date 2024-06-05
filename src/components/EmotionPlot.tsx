@@ -19,7 +19,7 @@ import { expressionColors } from 'expression-colors';
 import { Bar, Radar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler } from 'chart.js';
 import html2canvas from 'html2canvas';
-import { saveAs } from 'file-saver';
+import useEmotionPlotStore from '../store/emotionPlotStore';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler);
 
@@ -255,49 +255,44 @@ export const EmotionPlot = () => {
 
   const groupAverages = calculateGroupAverages(userMetrics.sums);
 
-  const downloadImage = async () => {
-    const input = chartRef.current;
-    if (input) {
-      const canvas = await html2canvas(input);
-      canvas.toBlob((blob) => {
-        if (blob) {
-          saveAs(blob, "emotion_plot.png");
-        }
-      });
-    }
+  const setImageData = useEmotionPlotStore((state) => state.setImageData);
+  const generateImage = async () => {
+    const plotElement = document.getElementById('emotion-plot');
+    const canvas = await html2canvas(plotElement);
+    const imageData = canvas.toDataURL('image/png');
+    setImageData(imageData);
   };
 
   return (
-    <VStack spacing={8} p={5} ref={chartRef} width={['100%', '80%', '60%']} align="center" maxW="800px" mx="auto">
-      <Heading>Call Summary</Heading>
-      <HStack spacing={4} align="center">
-        <Icon as={MessageCircle} boxSize={6} />
-        <Text>{messages.length} messages</Text>
-        <Icon as={Clock} boxSize={6} />
-        <Text>{callDuration ? `${callDuration} minutes` : 'Calculating duration...'}</Text>
-      </HStack>
-      <HStack spacing={8} align="center" justify="center" wrap="wrap">
-        {renderEmotionData(userMetrics.averages.slice(0, 3), "Top Averages", "averages", "average")}
-        {renderEmotionData(userMetrics.highestPeaks.slice(0, 3), "Highest Peaks", "peaks", "peak")}
-      </HStack>
-      <Flex direction={['column', 'row']} justify="center" align="center" width="100%">
-        <Box width={['100%', '45%']} mb={['8', '0']}>
-          <Heading size="sm" textAlign="center">Starting Emotions</Heading>
-          <Bar data={createBarData(firstThreeAverages)} options={barOptions} width={250} height={200} /> 
+    <div id="emotion-plot">
+      <VStack spacing={8} p={5} ref={chartRef} width={['100%', '80%', '60%']} align="center" maxW="800px" mx="auto">
+        <Heading>Call Summary</Heading>
+        <HStack spacing={4} align="center">
+          <Icon as={MessageCircle} boxSize={6} />
+          <Text>{messages.length} messages</Text>
+          <Icon as={Clock} boxSize={6} />
+          <Text>{callDuration ? `${callDuration} minutes` : 'Calculating duration...'}</Text>
+        </HStack>
+        <HStack spacing={8} align="center" justify="center" wrap="wrap">
+          {renderEmotionData(userMetrics.averages.slice(0, 3), "Top Averages", "averages", "average")}
+          {renderEmotionData(userMetrics.highestPeaks.slice(0, 3), "Highest Peaks", "peaks", "peak")}
+        </HStack>
+        <Flex direction={['column', 'row']} justify="center" align="center" width="100%">
+          <Box width={['100%', '45%']} mb={['8', '0']}>
+            <Heading size="sm" textAlign="center">Starting Emotions</Heading>
+            <Bar data={createBarData(firstThreeAverages)} options={barOptions} width={250} height={200} /> 
+          </Box>
+          <Box width={['100%', '45%']} mt={['8', '0']}>
+            <Heading size="sm" textAlign="center">After conversation</Heading>
+            <Bar data={createBarData(lastThreeAverages)} options={barOptions} width={250} height={200} /> 
+          </Box>
+        </Flex>
+        <Box width="100%"> 
+          <Heading size="sm" textAlign="center">Emotional State</Heading>
+          <Radar data={createRadarData(groupAverages)} options={radarOptions} width={300} height={300} /> 
         </Box>
-        <Box width={['100%', '45%']} mt={['8', '0']}>
-          <Heading size="sm" textAlign="center">After conversation</Heading>
-          <Bar data={createBarData(lastThreeAverages)} options={barOptions} width={250} height={200} /> 
-        </Box>
-      </Flex>
-      <Box width="100%"> 
-        <Heading size="sm" textAlign="center">Emotional State</Heading>
-        <Radar data={createRadarData(groupAverages)} options={radarOptions} width={300} height={300} /> 
-      </Box>
-      <Button onClick={downloadImage} colorScheme="blue">
-        Download as Image
-      </Button>
-    </VStack>
+      </VStack>
+    </div>
   );
 };
 
