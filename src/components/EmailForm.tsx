@@ -1,10 +1,9 @@
 import { FC, useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "../components/Button";
-import EmotionPlot from './EmotionPlot';
-import useEmotionPlotStore from '../store/emotionPlotStore';
-import html2canvas from 'html2canvas';
-import { sendEmailWithImage} from 'wasp/client/operations'
+import EmotionPlot from "./EmotionPlot";
+import html2canvas from "html2canvas";
+import { sendEmailWithImage } from "wasp/client/operations";
 
 interface EmailFormProps {
   onClose: () => void;
@@ -21,10 +20,10 @@ const EmailForm: FC<EmailFormProps> = ({ onClose }) => {
     };
 
     handleResize(); // Check initial screen size
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -38,9 +37,9 @@ const EmailForm: FC<EmailFormProps> = ({ onClose }) => {
         width: 1080, // A4 width in pixels at 96 DPI
         height: 1920, // A4 height in pixels at 96 DPI
       });
-      const imageData = canvas.toDataURL('image/png');
+      const imageData = canvas.toDataURL("image/png");
 
-      sendEmailWithImage({email, imageData})
+      sendEmailWithImage({ email, imageData });
       onClose();
     }
   };
@@ -99,11 +98,22 @@ const EmailForm: FC<EmailFormProps> = ({ onClose }) => {
       </motion.div>
 
       {/* Hidden container for EmotionPlot */}
-      <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: isMobile ? '375px' : '1080px', height: isMobile ? '667px' : '1920px' }}>
-        <div ref={hiddenPlotRef} style={{ width: '100%', height: '100%' }}>
+      <div
+        style={{
+          position: "absolute",
+          top: "-9999px",
+          left: "-9999px",
+          width: isMobile ? "375px" : "1080px", // Adjust width as necessary
+          height: isMobile ? "667px" : "1440px",
+          overflow: "hidden", // Ensure nothing spills over the container size
+          padding: "10px 0px", // Reduced padding or margin here
+        }}
+      >
+        <div ref={hiddenPlotRef} style={{ width: "100%", height: "100%" }}>
           <EmotionPlot />
         </div>
       </div>
+
     </>
   );
 };

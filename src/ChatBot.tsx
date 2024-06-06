@@ -1,6 +1,7 @@
 import React, { ComponentProps, useState } from "react";
 import { type AuthUser, getUsername } from "wasp/auth";
 import { logout } from "wasp/client/auth";
+import { getHumeConfig, useQuery } from "wasp/client/operations";
 import { parentDispatch } from "./utils/parentDispatch";
 import { MessageListener } from "./components/MessageListener";
 import { Views } from "./views/Views";
@@ -10,6 +11,7 @@ import { AnimatePresence } from "framer-motion";
 import { Box } from "@chakra-ui/react";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
+import useMessagesStore, { addMessageToStore } from "./store/messagesStore";
 import {
   UserTranscriptMessage,
   AssistantTranscriptMessage,
@@ -29,10 +31,10 @@ import {
 //   posthog.capture("$pageview");
 // }
 
-type MessageType = UserTranscriptMessage | AssistantTranscriptMessage;
 
 export const ChatBot = () => {
-  const [messages, setMessages] = useState<MessageType[]>([]);
+  const { data: humeConfig } = useQuery(getHumeConfig);
+  const messages = useMessagesStore((state) => state.messages);
 
   const dispatchMessage: ComponentProps<typeof VoiceProvider>["onMessage"] = (
     message
@@ -45,7 +47,7 @@ export const ChatBot = () => {
       message.type === "user_message" ||
       message.type === "assistant_message"
     ) {
-      setMessages((prevMessages) => [...prevMessages, message as MessageType]);
+      addMessageToStore(message);
       parentDispatch(TRANSCRIPT_MESSAGE_ACTION(message));
     }
   };
@@ -55,11 +57,12 @@ export const ChatBot = () => {
       <Box>
         <VoiceProvider
           auth={{
-            type: "apiKey",
-            value: "UGr0q0DHsFcJT1EufOcjI5glJVArdLTlxkYZqO0tGbysfsfs",
+            type: "accessToken",
+            value: humeConfig?.accessToken || "",
           }}
           onMessage={dispatchMessage}
           configId={"b14e74c9-7854-40da-bfdd-7ed07d229c91"}
+          configVersion={50}
           onError={(err) => {
             posthog.capture("api_error", { error: err });
           }}
@@ -67,7 +70,7 @@ export const ChatBot = () => {
             posthog.capture("socket_closed", { event: e });
           }}
         >
-          <Views messages={messages}/>
+          <Views/>
         </VoiceProvider>
       </Box>
     </PostHogProvider>

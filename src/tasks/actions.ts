@@ -20,8 +20,9 @@ export const sendEmailWithImage: SendEmailWithImage<
     subject: "Emotional Summary",
     html: `
       <img src='cid:emotion_plot.png' alt='Emotion Plot'/>
-      <p>p.s. The making of this product took 100+ hours, with someone dedicating their full time, and your demo cost us about $0.20 per minute. We kindly ask you to pledge €5 to continue supporting this project.<a href="https://buy.stripe.com/4gwaFhf3Hc3T1he3cc">Click here to pledge</a> Also, I would love it if you reply to this email with your testimonial. That also really helps. And if you have a family member or a friend suffering from anxiety, why not share with them?</p>
-      <p>Live bold, love deep, and peace ✌🏽🕊</p>️
+      <p>p.s. The making of this product took 100+ hours, if you find this useful and continue offering high-quality emotional support for free, please pledge €5 from <a href="https://buy.stripe.com/4gwaFhf3Hc3T1he3cc">this link</a>.</p>
+      <p>Thx✌🏽 
+      -Utku</p>️
     `,
     attachments: [
       {

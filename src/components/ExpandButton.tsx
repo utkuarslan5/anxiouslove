@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useRef, ComponentRef, FC } from "react";
 import { useButton, mergeProps } from "react-aria";
 import { useSafeMotion } from "../utils/useSafeMotion";
-import { ArrowUpRight } from "lucide-react";
+import { DollarSign } from "lucide-react";
 
 export type ExpandButtonProps = {
   onPress: () => void;
@@ -41,7 +41,7 @@ export const ExpandButton: FC<ExpandButtonProps> = ({ onPress }) => {
       }
       {...mergeProps(ExpandButtonProps, buttonTransition)}
     >
-      <ArrowUpRight className={"size-5"} />
+      <DollarSign className={"size-5"} />
       <span className="sr-only">Pre-order</span>
     </motion.div>
   );

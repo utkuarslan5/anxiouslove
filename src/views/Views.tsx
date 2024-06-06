@@ -7,20 +7,10 @@ import { useVoice } from "@humeai/voice-react";
 import { FC, useState } from "react";
 import { match } from "ts-pattern";
 import { Box, Center } from "@chakra-ui/react";
-import {
-  UserTranscriptMessage,
-  AssistantTranscriptMessage,
-} from "@humeai/voice";
 
-type MessageType = UserTranscriptMessage | AssistantTranscriptMessage;
+export type ViewsProps = Record<never, never>;
 
-export type ViewsProps = {
-  messages: MessageType[];
-};
-
-// export type ViewsProps = Record<never, never>;
-
-export const Views: FC<ViewsProps> = ({ messages }) => {
+export const Views: FC<ViewsProps> = () => {
   const { connect, disconnect, status, error } = useVoice();
   const [conversationEnded, setConversationEnded] = useState(false);
 
@@ -57,9 +47,7 @@ export const Views: FC<ViewsProps> = ({ messages }) => {
           .with("disconnected", "connecting", () => {
             return conversationEnded ? (
               <Box>
-                <EndScreen 
-                messages={messages} 
-                onTryAgain={() => setConversationEnded(false)}/>
+                <EndScreen onTryAgain={() => setConversationEnded(false)} />
               </Box>
             ) : (
               <Box>
