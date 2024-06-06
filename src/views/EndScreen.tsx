@@ -58,19 +58,6 @@ export const EndScreen: FC<{
     const calculatedCost = (minutes * 0.35).toFixed(2);
     setCost(calculatedCost);
   }, [messages]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      const script = document.createElement("script");
-      script.src = "https://js.stripe.com/v3/buy-button.js";
-      script.async = true;
-      document.body.appendChild(script);
-
-      return () => {
-        document.body.removeChild(script);
-      };
-    }
-  }, [isSuccess]);
   
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);

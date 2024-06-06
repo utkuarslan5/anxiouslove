@@ -31,7 +31,7 @@
       // Source 1: https://www.typescriptlang.org/tsconfig#typeRoots 
       // Source 2: https://github.com/testing-library/jest-dom/issues/546#issuecomment-1889884843
       "node_modules/@types", 
-      "./src/types"
+      "src/types/custom.d.ts"
     ],
     // Since this TS config is used only for IDE support and not for
     // compilation, the following directory doesn't exist. We need to specify

@@ -4,7 +4,10 @@ app anxiouslove {
   },
   title: "Anxious Love",
   head: [
-    "<link rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\" />"
+    "<link rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\" />",
+    "<script async src=\"https://js.stripe.com/v3/buy-button.js\"></script>",
+    "<script defer data-domain=\"demo.anxiouslove.me\" src=\"https://plausible.io/js/script.js\"></script>",
+    "<script async src=\"https://tally.so/widgets/embed.js\"></script>"
   ],
   client: {
     rootComponent: import { Layout } from "@src/Layout.jsx",

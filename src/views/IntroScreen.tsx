@@ -33,7 +33,7 @@ export const IntroScreen = ({
             <br />
           </h2>
           <p className="text-center text-xl text-gray-500">
-            I'm Eli&mdash;I'm here to listen and soothe to your anxiety.
+            Hi, I'm Eli&mdash;I'm here to listen and soothe to your anxiety.
           </p>
 
           <div className="w-fit">
