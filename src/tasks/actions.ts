@@ -17,17 +17,11 @@ export const sendEmailWithImage: SendEmailWithImage<
   const requestBody = {
     from: { email: "hey@anxiouslove.me" },
     to: [{ email }],
-    subject: "Emotional Summary",
+    subject: "Call Summary",
     html: `
-  
-      <p>Here is your emotional summary:</p>
       <img src='cid:emotion_plot.png' alt='Emotion Plot'/>
       <p>
-      p.s. Making of this product took 100+ hours, if you find this useful, please consider <a href="https://buy.stripe.com/4gwaFhf3Hc3T1he3cc">supporting us</a>.
-      </p>
-      <p>
-        Also, <a href="mailto:utkuvonarslan@gmail.com?subject=Eli%20-%20Emotional%20AI%20Feedback">share your testimonial</a>, that also really helps. If you have a friend or family member struggling with anxiety, why not share it with them? Help them sort their shit out. 
-      </p>
+        If you have a friend or family member struggling with anxiety, why not share it with them? Also, <a href="mailto:utkuvonarslan@gmail.com?subject=Eli%20-%20Emotional%20AI%20Feedback">share your testimonial</a>, that also really helps. 
 
       <p>Thx✌🏽 
       -Utku</p>️

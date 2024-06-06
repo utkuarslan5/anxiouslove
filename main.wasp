@@ -49,12 +49,6 @@ page MainPage {
   component: import { MainPage } from "@src/MainPage"
 }
 
-route PlotRoute { path: "/plot", to: PlotPage }
-page PlotPage {
-  authRequired: false,
-  component: import { EmotionPlot } from "@src/components/EmotionPlot"
-}
-
 route LoginRoute { path: "/login", to: LoginPage }
 page LoginPage {
   component: import { LoginPage } from "@src/auth/LoginPage"
@@ -65,10 +59,6 @@ page SignupPage {
   component: import { SignupPage } from "@src/auth/SignupPage"
 }
 
-
-query getPosthogConfig {
-  fn: import { getPosthogConfig } from "@src/tasks/queries",
-}
 
 query getHumeConfig {
   fn: import { getHumeConfig } from "@src/tasks/queries",
