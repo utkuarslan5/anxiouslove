@@ -15,6 +15,7 @@ import {
   FormLabel,
   FormErrorMessage,
   FormHelperText,
+  Image 
 } from "@chakra-ui/react";
 import { Button } from "../components/Button";
 import { LastVoiceMessage } from "../components/LastVoiceMessage";
@@ -31,7 +32,9 @@ import {
   UserTranscriptMessage,
   AssistantTranscriptMessage,
 } from "@humeai/voice";
-import { ThumbsUp } from "lucide-react"; // Import the thumbs-up icon
+import { ThumbsUp } from "lucide-react";
+import stripe2Image from "/stripe2.png";
+
 
 export const EndScreen: FC<{
   onTryAgain: () => void;
@@ -85,6 +88,10 @@ export const EndScreen: FC<{
         console.error("Failed to send email:", error);
       }
     }
+  };
+
+  const handlePledgeNowClick = () => {
+    window.open("https://buy.stripe.com/4gwaFhf3Hc3T1he3cc", "_blank");
   };
 
   return (
@@ -178,44 +185,53 @@ export const EndScreen: FC<{
         </>
       ) : (
         // Success component
-        <Box className="flex flex-col items-center justify-center mt-4 animate-slideUpAndFade">
+        <Box className="flex flex-col items-center justify-center mb-32 mt-32 animate-slideUpAndFade">
           <motion.div
             initial={{ rotate: 0 }}
             animate={{ rotate: [0, 45, 0] }}
             transition={{ duration: 1 }}
           >
-            <ThumbsUp size={48} color="green" />
+            <ThumbsUp size={48} color="gray" />
           </motion.div>
           <motion.p
-            className="text-center text-xl mt-2"
+            className="text-left text-2xl mt-16 font-bold text-gray-500"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            Email on its way!
+            We are on a mission to eradicate anxiety through technology.
           </motion.p>
-          <stripe-buy-button
-            buy-button-id="buy_btn_1POHMoRxJH6vk0B2JhhgEbHG"
-            publishable-key="pk_live_51PBtlbRxJH6vk0B2Ndzxi89dZung2JGPntJI7mKjoyGbrhv4e5Lij2L2v4WzFTyrlcw2wA2J7ZdQ6hzCH0jzKjDn004IgstmzI"
-          ></stripe-buy-button>
           <motion.p
-            className="text-left text-md mt-2"
+            className="text-left text-lg mt-4 text-gray-500"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
           >
-            Making of this demo took hundreds of hours and yours alone cost €
-            {cost}. <br />
-            Please consider supporting for making emotional support more
-            accessible.
+            Pledge today for a future living free from anxiety.
           </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5 }}
+          >
+            <Image pt={2} pb={2} src="/stripe1.png" alt="Stripe 1" />
+            <Button
+              onClick={handlePledgeNowClick}
+              className="mt-4 mx-auto"
+            >
+              Pledge now
+            </Button>
+            <Image pt={4} pb={8} src="/stripe2.png" alt="Stripe 2" />
+          </motion.div>
+
           <motion.p
             className="text-center text-md mt-2 font-bold"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5 }}
           >
-            We all deserve to feel.
+            {/* We all deserve to feel. */}
           </motion.p>
         </Box>
       )}
