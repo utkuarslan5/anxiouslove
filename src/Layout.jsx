@@ -23,17 +23,19 @@ import "./Main.css";
 
 export const Layout = ({ children }) => {
   useEffect(() => {
-    // const script = document.createElement("script");
-    // script.defer = true;
-    // script.dataset.domain = "demo.anxiouslove.me";
-    // script.src = "https://plausible.io/js/script.js";
-    // document.head.appendChild(script);
+    const script = document.createElement("script");
+    script.defer = true;
+    script.dataset.domain = "demo.anxiouslove.me";
+    script.src = "https://plausible.io/js/script.js";
+    document.head.appendChild(script);
 
     const script2 = document.createElement("script");
     script2.async = true;
     script2.src = "https://tally.so/widgets/embed.js";
     document.head.appendChild(script2);
   }, []);
+
+  
 
   return (
     <ChakraProvider>

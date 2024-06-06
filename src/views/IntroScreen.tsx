@@ -12,28 +12,6 @@ export const IntroScreen = ({
   onConnect: () => void;
   isConnecting: boolean;
 }) => {
-  // const isMobile =
-  //   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-  //     navigator.userAgent
-  //   );
-  // const toast = useToast();
-  // const mobileToastId = "mobile-toast";
-
-  // useEffect(() => {
-  //   if (isMobile && !toast.isActive(mobileToastId)) {
-  //     toast({
-  //       id: mobileToastId,
-  //       icon: "🎉",
-  //       title: "Our mobile demo is still experimental",
-  //       description:
-  //         "Please let us know how it goes via utkuvonarslan@gmail.com",
-  //       status: "warning",
-  //       duration: 8000,
-  //       isClosable: true,
-  //     });
-  //   }
-  // }, [isMobile, toast]);
-
   return (
     <motion.div
       className={cn(
@@ -46,15 +24,18 @@ export const IntroScreen = ({
       {
         <>
           <h2 className="text-center text-3xl">
-            <span>
-              Hi, I'm Anxious Love
-              <br className="sm:hidden" />
+            <CircledText>
+              Emotional
+            </CircledText>
+            <span> 
+              -AI Companion
             </span>
-            <span> </span>
             <br />
-            <CircledText> Emotional</CircledText>
-            <span> AI</span>
           </h2>
+          <p className="text-center text-xl text-gray-500">
+            I'm Eli&mdash;I'm here to listen and soothe to your anxiety.
+          </p>
+
           <div className="w-fit">
             <motion.div
               variants={{
@@ -88,7 +69,7 @@ export const IntroScreen = ({
                 isLoading={isConnecting}
                 loadingText={"Connecting..."}
               >
-                Start Call
+                Start Demo
               </Button>
             </motion.div>
           </div>

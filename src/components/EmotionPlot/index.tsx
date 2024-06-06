@@ -49,7 +49,11 @@ export const EmotionPlot = () => {
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setCallDuration(calculateCallDuration(messages));
+    const durationInMs = calculateCallDuration(messages);
+    const durationInMinutes = Math.floor(durationInMs / 60000);
+    const seconds = Math.floor((durationInMs % 60000) / 1000);
+    const formattedDuration = `${durationInMinutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    setCallDuration(formattedDuration);
   }, [messages]);
 
   const filterAndExtractScores = (type: string) =>

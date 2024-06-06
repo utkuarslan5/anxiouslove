@@ -151,9 +151,7 @@ export const calculateCallDuration = (data: MessageType[]) => {
     const firstTimestamp = new Date(data[0].receivedAt).getTime();
     const lastTimestamp = new Date(data[data.length - 1].receivedAt).getTime();
     const durationInMs = lastTimestamp - firstTimestamp;
-    const durationInMinutes = Math.floor(durationInMs / 60000);
-    const seconds = Math.floor((durationInMs % 60000) / 1000);
-    return `${durationInMinutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    return durationInMs;
   }
-  return '';
+  return 0;
 };

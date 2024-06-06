@@ -17,19 +17,19 @@ import {
   AssistantTranscriptMessage,
 } from "@humeai/voice";
 
-// if (typeof window !== "undefined") {
-//   posthog.init("phc_QWCQnocWvXO4UW30UUmZusN3OoPwucgo3VELxKq9AOR", {
-//     api_host: "https://eu.i.posthog.com",
-//     loaded: (posthog) => {
-//       if (import.meta.env.NODE_ENV === "development") posthog.debug(); // debug mode in development
-//     },
-//     capture_pageview: true,
-//     disable_session_recording: false,
-//     enable_recording_console_log: true,
-//     property_blacklist: [],
-//   });
-//   posthog.capture("$pageview");
-// }
+if (typeof window !== "undefined") {
+  posthog.init("phc_QWCQnocWvXO4UW30UUmZusN3OoPwucgo3VELxKq9AOR", {
+    api_host: "https://eu.i.posthog.com",
+    loaded: (posthog) => {
+      if (import.meta.env.NODE_ENV === "development") posthog.debug(); // debug mode in development
+    },
+    capture_pageview: true,
+    disable_session_recording: false,
+    enable_recording_console_log: true,
+    property_blacklist: [],
+  });
+  posthog.capture("$pageview");
+}
 
 
 export const ChatBot = () => {
@@ -62,7 +62,7 @@ export const ChatBot = () => {
           }}
           onMessage={dispatchMessage}
           configId={"b14e74c9-7854-40da-bfdd-7ed07d229c91"}
-          configVersion={50}
+          configVersion={52}
           onError={(err) => {
             posthog.capture("api_error", { error: err });
           }}
