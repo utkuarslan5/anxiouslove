@@ -19,12 +19,31 @@ export const sendEmailWithImage: SendEmailWithImage<
     to: [{ email }],
     subject: "Call Summary",
     html: `
+      <p>
+        hey, just so you know, this is pretty experimental.<br>
+        the real charts are interactive.<br>
+        and personalised for you.<br>
+        just have a look.<br>
+        if you want to find root causes of your anxiety,<br>
+        we'll have a link to join our early access programme down below.
+      </p>
       <img src='cid:emotion_plot.png' alt='Emotion Plot'/>
       <p>
-        If you have a friend or family member struggling with anxiety, why not share it with them? Also, <a href="mailto:utkuvonarslan@gmail.com?subject=Eli%20-%20Emotional%20AI%20Feedback">share your testimonial</a>, that also really helps. 
+        if you like this,<br>
+        <a href="https://tally.so/r/mVZR5N">join our tribe </a><br>
+        innovating to eradicate their anxiety and<br>
+        show up in life fully.<br>
+        if you have a friend or family member struggling with anxiety,<br>
+        why not share this with them?<br>
+        also, <a href="mailto:utkuvonarslan@gmail.com?subject=Eli%20-%20Emotional%20AI%20Feedback">send your testimonial</a>,<br>
+        that also really helps.
+      </p>
+      <p>thx✌<br> 
+        -utku
+      </p>
 
-      <p>Thx✌🏽 
-      -Utku</p>️
+
+
     `,
     attachments: [
       {

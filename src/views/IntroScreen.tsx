@@ -24,11 +24,12 @@ export const IntroScreen = ({
       {
         <>
           <h2 className="text-center text-3xl">
+            
             <CircledText>
-              Emotional
+              Anxiety
             </CircledText>
             <span> 
-              -AI Companion
+              -AI  Companion
             </span>
             <br />
           </h2>

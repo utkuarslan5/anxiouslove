@@ -75,9 +75,9 @@ export const EmotionPlot = () => {
         spacing={8}
         p={5}
         ref={chartRef}
-        width={["100%", "80%", "60%"]}
+        width={["100%"]}
         align="center"
-        maxW="800px"
+        // maxW="800px"
         mx="auto"
       >
         {/* <Heading>Call Summary</Heading> */}
@@ -91,7 +91,7 @@ export const EmotionPlot = () => {
               : "Calculating duration..."}
           </Text>
         </HStack>
-        <HStack spacing={8} align="center" justify="center" wrap="wrap">
+        <HStack spacing={16} align="center" justify="center" wrap="wrap">
           <EmotionData
             data={userMetrics.averages.slice(0, 3)}
             title="Top Averages"

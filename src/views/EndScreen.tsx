@@ -1,3 +1,4 @@
+// src/views/EndScreen.tsx
 import { FC, useState, useRef, useEffect } from "react";
 import {
   Box,
@@ -26,6 +27,7 @@ import { motion } from "framer-motion";
 import { cn } from "../utils";
 import EmotionPlot from "../components/EmotionPlot";
 import html2canvas from "html2canvas";
+import imageCompression from 'browser-image-compression'; // Import the image compression library
 import { sendEmailWithImage } from "wasp/client/operations";
 import useMessagesStore from "../store/messagesStore";
 import {
@@ -34,7 +36,7 @@ import {
 } from "@humeai/voice";
 import { ThumbsUp } from "lucide-react";
 import stripe2Image from "/stripe2.png";
-
+import { blobToFile } from "../utils/blobToFile"; // Import the blobToFile utility function
 
 export const EndScreen: FC<{
   onTryAgain: () => void;
@@ -75,19 +77,39 @@ export const EndScreen: FC<{
 
     if (hiddenPlotRef.current) {
       const canvas = await html2canvas(hiddenPlotRef.current, {
-        width: 1080, // A4 width in pixels at 96 DPI
-        height: 1280, // A4 height in pixels at 96 DPI
+        // width: 1280, // A4 width in pixels at 96 DPI
+        // height: 1280, // A4 height in pixels at 96 DPI
       });
       const imageData = canvas.toDataURL("image/png");
 
+      // Compress the image data
+      const compressedImageData = await compressImage(imageData);
+
       try {
-        await sendEmailWithImage({ email, imageData });
+        await sendEmailWithImage({ email, imageData: compressedImageData });
         setIsSuccess(true); // Set success state to true
         onClose();
       } catch (error) {
         console.error("Failed to send email:", error);
       }
     }
+  };
+
+  const compressImage = async (base64Image: string): Promise<string> => {
+    const imageBlob = await fetch(base64Image).then(res => res.blob());
+    const imageFile = blobToFile(imageBlob, 'image.png'); // Convert Blob to File
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1280,
+      useWebWorker: true
+    };
+    const compressedFile = await imageCompression(imageFile, options);
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(compressedFile);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
   };
 
   const handlePledgeNowClick = () => {
@@ -242,8 +264,8 @@ export const EndScreen: FC<{
           position: "absolute",
           top: "-9999px",
           left: "-9999px",
-          width: "1080x", // Fixed width
-          height: "1280px", // Fixed height
+          // width: "1280x", // Fixed width
+          // height: "1280px", // Fixed height
           overflow: "hidden", // Ensure nothing spills over the container size
           padding: "10px 30px", // Reduced padding or margin here
         }}

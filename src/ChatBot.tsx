@@ -62,7 +62,7 @@ export const ChatBot = () => {
           }}
           onMessage={dispatchMessage}
           configId={"b14e74c9-7854-40da-bfdd-7ed07d229c91"}
-          configVersion={52}
+          configVersion={54}
           onError={(err) => {
             posthog.capture("api_error", { error: err });
           }}
