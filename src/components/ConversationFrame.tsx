@@ -55,7 +55,7 @@ export const ConversationFrame: FC<ConversationFrameProps> = ({
               {/* <VStack alignItems="center"> */}
                 <Tooltip.Root>
                   <Tooltip.Trigger>
-                    <MuteButton
+                    {/* <MuteButton
                       onPress={() => {
                         if (isMuted) {
                           unmute();
@@ -64,7 +64,7 @@ export const ConversationFrame: FC<ConversationFrameProps> = ({
                         }
                       }}
                       isMuted={isMuted}
-                    />
+                    /> */}
                   </Tooltip.Trigger>
                   <Tooltip.Content
                     className={
@@ -81,37 +81,7 @@ export const ConversationFrame: FC<ConversationFrameProps> = ({
                     <ExpandButton
                       onPress={() => {
                         onClose();
-                        const iframe = document.createElement("iframe");
-                        iframe.src = "data:text/html,<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'><title>How much unresolved anxiety is costing your life?</title><script async src='https://tally.so/widgets/embed.js'></script><style type='text/css'>html { margin: 0; height: 100%; overflow: hidden; } iframe { position: absolute; top: 0; right: 0; bottom: 0; left: 0; border: 0; }</style></head><body><iframe data-tally-src='https://tally.so/r/mVZR5N' width='100%' height='100%' frameborder='0' marginheight='0' marginwidth='0' title='How much unresolved anxiety is costing your life?'></iframe></body></html>";
-                        iframe.style.width = "100%";
-                        iframe.style.height = "100%";
-                        iframe.style.border = "none";
-                        const container = document.createElement("div");
-                        container.style.position = "fixed";
-                        container.style.top = "0";
-                        container.style.left = "0";
-                        container.style.width = "100%";
-                        container.style.height = "100%";
-                        container.style.zIndex = "9999";
-                        container.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-                        container.appendChild(iframe);
-                        document.body.appendChild(container);
-                        const closeButton = document.createElement("button");
-                        closeButton.innerText = "Close";
-                        closeButton.style.position = "fixed";
-                        closeButton.style.top = "10px";
-                        closeButton.style.right = "10px";
-                        closeButton.style.zIndex = "10000";
-                        closeButton.style.padding = "10px 20px";
-                        closeButton.style.backgroundColor = "white";
-                        closeButton.style.border = "none";
-                        closeButton.style.borderRadius = "5px";
-                        closeButton.style.cursor = "pointer";
-                        closeButton.addEventListener("click", () => {
-                          document.body.removeChild(container);
-                          document.body.removeChild(closeButton);
-                        });
-                        document.body.appendChild(closeButton);
+                        window.open("https://buy.stripe.com/bIYaFh7Bf0lb3pm6op", "_blank");
                       }}
                     />
                   </Tooltip.Trigger>

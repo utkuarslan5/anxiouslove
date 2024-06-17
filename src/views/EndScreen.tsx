@@ -181,14 +181,14 @@ export const EndScreen: FC<{
               <ModalCloseButton />
               <ModalBody>
                 <FormControl isInvalid={isError}>
-                  <FormLabel>Email address</FormLabel>
+                  {/* <FormLabel>We send it as an email to prevent abuse</FormLabel> */}
                   <Input
                     type="email"
                     id="email"
                     color="blackAlpha"
                     value={email}
                     onChange={handleEmailChange}
-                    placeholder="Enter your email address"
+                    placeholder="Your preferred email"
                     isRequired
                     variant={"flushed"}
                   />
@@ -199,7 +199,7 @@ export const EndScreen: FC<{
               </ModalBody>
               <ModalFooter>
                 <Button onClick={handleSubmit} className="mt-8 mx-auto">
-                  Send it
+                  Send me
                 </Button>
               </ModalFooter>
             </ModalContent>

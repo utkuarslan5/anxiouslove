@@ -1,0 +1,14 @@
+{
+  "name": "Anxious Love",
+  "short_name": "Eli",
+  "description": "Eli is a virtual friend for your anxiety.",
+  "start_url": "/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
