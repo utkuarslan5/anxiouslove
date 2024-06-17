@@ -10,7 +10,7 @@ app anxiouslove {
     "<script async src=\"https://tally.so/widgets/embed.js\"></script>"
   ],
   client: {
-    rootComponent: import { Layout } from "@src/Layout.jsx",
+    rootComponent: import { Layout } from "@src/Layout.tsx",
   },
   db: {
     system: PostgreSQL,
