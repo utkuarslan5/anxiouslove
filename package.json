@@ -44,6 +44,7 @@
     "ts-pattern": "^5.1.1",
     "vitest": "^1.5.2",
     "wasp": "file:.wasp/out/sdk/wasp",
+    "workbox-sw": "^7.1.0",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
