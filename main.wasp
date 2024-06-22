@@ -5,9 +5,7 @@ app anxiouslove {
   title: "Anxious Love",
   head: [
     "<link rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\" />",
-    "<script async src=\"https://js.stripe.com/v3/buy-button.js\"></script>",
-    "<script defer data-domain=\"demo.anxiouslove.me\" src=\"https://plausible.io/js/script.js\"></script>",
-    "<script async src=\"https://tally.so/widgets/embed.js\"></script>",
+    // "<script defer data-domain=\"demo.anxiouslove.me\" src=\"https://plausible.io/js/script.js\"></script>",
     "<link rel=\"manifest\" href=\"/manifest.json\">"
   ],
   client: {
@@ -20,9 +18,9 @@ app anxiouslove {
     userEntity: User,
     methods: {
       usernameAndPassword: {}, // This is a very naive implementation, use 'email' in production instead
-      //google: {}, // https://wasp-lang.dev/docs/integrations/google
+      // google: {}, // https://wasp-lang.dev/docs/integrations/google
       //gitHub: {}, // https://wasp-lang.dev/docs/integrations/github
-      //email: {} // https://wasp-lang.dev/docs/guides/email-auth
+      // email: {} // https://wasp-lang.dev/docs/guides/email-auth
     },
     onAuthFailedRedirectTo: "/",
   }

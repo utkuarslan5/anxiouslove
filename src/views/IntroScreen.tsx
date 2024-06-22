@@ -1,9 +1,17 @@
-import { Button } from "../components/Button";
+import {
+  Button,
+  Link as ChakraLink,
+  useToast,
+  Box,
+  Text,
+  VStack,
+  Center,
+} from "@chakra-ui/react";
 import { CircledText } from "../components/CircledText";
-import { motion } from "framer-motion";
 import { cn } from "../utils";
-import { useToast } from "@chakra-ui/react";
 import React, { useEffect } from "react";
+import { useAuth, logout } from "wasp/client/auth";
+import { LogIn, LogOut, ChevronRight } from "lucide-react";
 
 export const IntroScreen = ({
   onConnect,
@@ -12,70 +20,57 @@ export const IntroScreen = ({
   onConnect: () => void;
   isConnecting: boolean;
 }) => {
-  return (
-    <motion.div
-      className={cn(
-        "flex flex-col items-center justify-center h-screen px-12 gap-8"
-      )}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1, translateY: -4 }}
-      transition={{ duration: 2 }}
-    >
-      {
-        <>
-          <h2 className="text-center text-3xl">
-            
-            <CircledText>
-              Anxiety
-            </CircledText>
-            <span> 
-              -AI  Companion
-            </span>
-            <br />
-          </h2>
-          <p className="text-center text-xl text-gray-500">
-            Hi, I'm Eli&mdash;I'm here to listen and soothe to your anxiety.
-          </p>
+  const { data: user } = useAuth();
 
-          <div className="w-fit">
-            <motion.div
-              variants={{
-                initial: {
-                  y: "100%",
-                  opacity: 0,
-                },
-                enter: {
-                  y: 0,
-                  opacity: 1,
-                  transition: {
-                    opacity: {
-                      duration: 0.7,
-                      ease: "easeInOut",
-                    },
-                    y: {
-                      duration: 1.1,
-                      ease: "easeInOut",
-                    },
-                  },
-                },
-                exit: {
-                  opacity: 0,
-                },
-              }}
+  return (
+    <Center height="100vh">
+      <VStack spacing={8} align="center" justify="center">
+        <Text as="h2" textAlign="center" fontSize="3xl">
+          <CircledText>Lorem</CircledText>
+          <span> Ipsum Dolor</span>
+        </Text>
+        <Text textAlign="center" fontSize="xl" color="gray.500">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </Text>
+
+        <VStack spacing={4} align="center">
+          <Button
+            onClick={onConnect}
+            isLoading={isConnecting}
+            loadingText={"Connecting..."}
+            rightIcon={<ChevronRight />}
+            colorScheme="teal"
+            width="200px"
+            height="50px"
+          >
+            Start Demo
+          </Button>
+
+          {user ? (
+            <Button
+              onClick={logout}
+              variant="link"
+              size="lg"
+              width="200px"
+              height="50px"
             >
+              <LogOut />
+            </Button>
+          ) : (
+            <ChakraLink href="/login">
               <Button
-                onClick={() => {
-                  onConnect();
-                }}
-                isLoading={isConnecting}
-                loadingText={"Connecting..."}
+                variant="outline"
+                size="lg"
+                rightIcon={<LogIn />}
+                width="200px"
+                height="50px"
               >
-                Start Demo
+                Log In
               </Button>
-            </motion.div>
-          </div>
-        </>
-      }
-    </motion.div>
+            </ChakraLink>
+          )}
+        </VStack>
+      </VStack>
+    </Center>
   );
 };

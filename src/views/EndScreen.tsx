@@ -163,8 +163,8 @@ export const EndScreen: FC<{
                   },
                 }}
               >
-                <Button onClick={onOpen} className="mx-auto">
-                  See summary
+                <Button onClick={onTryAgain} className="mx-auto">
+                  Try again
                 </Button>
               </motion.div>
             </VStack>

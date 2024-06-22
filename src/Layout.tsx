@@ -1,5 +1,10 @@
 import { useEffect, ReactNode } from "react";
-import { ChakraProvider, Box } from "@chakra-ui/react";
+import {
+  ChakraProvider,
+  Flex,
+  Box,
+  Container,
+} from "@chakra-ui/react";
 import "./Main.css";
 
 interface LayoutProps {
@@ -28,7 +33,7 @@ export const Layout = ({ children }: LayoutProps) => {
 
   return (
     <ChakraProvider>
-      <Box>{children}</Box>
+          {children}
     </ChakraProvider>
   );
 };
