@@ -1,6 +1,5 @@
-import { type Task } from "wasp/entities";
 import { HttpError } from "wasp/server";
-import { type SendEmailWithImage } from "wasp/server/operations";
+import { type SendEmailWithImage, type AddChatGroupId } from "wasp/server/operations";
 import axios from "axios";
 
 type SendEmailArgs = {
@@ -75,4 +74,21 @@ export const sendEmailWithImage: SendEmailWithImage<
       `Failed to send email: ${error.response.data}`
     );
   }
+};
+type AddChatGroupIdArgs = {
+  chatGroupId: string;
+};
+export const addChatGroupId: AddChatGroupId<AddChatGroupIdArgs, void> = async (
+  { chatGroupId },
+  context
+) => {
+  const user = context.user;
+  if (!user) {
+    throw new HttpError(404, "User not found");
+  }
+
+  await context.entities.User.update({
+    where: { id: user.id },
+    data: { chatGroupId: chatGroupId },
+  });
 };

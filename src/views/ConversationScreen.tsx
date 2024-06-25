@@ -14,15 +14,22 @@ export const ConversationScreen = () => {
 
   return (
     <Box>
-      <LastVoiceMessage lastVoiceMessage={lastVoiceMessage} />
-      {!lastUserMessage ? <WaitingPrompt /> : null}
-      <WebGLAvatar
-        fft={micFft}
-        isPlaying={isPlaying}
-        prosody={lastVoiceMessage?.models.prosody?.scores ?? {}}
-        width={height * 1.5}
-        height={height}
-      />
+      {/* <LastVoiceMessage lastVoiceMessage={lastVoiceMessage} />
+      {!lastUserMessage ? <WaitingPrompt /> : null} */}
+      <Box
+        position="absolute"
+        top="33%"
+        left="50%"
+        transform="translate(-50%, -33%)"
+      >
+        <WebGLAvatar
+          fft={micFft}
+          isPlaying={isPlaying}
+          prosody={lastVoiceMessage?.models.prosody?.scores ?? {}}
+          width={height * 1.5}
+          height={height}
+        />
+      </Box>
       <Backdrop
         prosody={lastVoiceMessage?.models.prosody?.scores ?? {}}
         activeView={VoiceAnimationState.IDLE}
