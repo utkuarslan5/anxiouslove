@@ -1,7 +1,7 @@
 {
-  "name": "Anxious Love",
-  "short_name": "Eli",
-  "description": "Eli is a virtual friend for your anxiety.",
+  "name": "Secret Friend",
+  "short_name": "SF",
+  "description": "Secret Friend is your rough virtual friend who isn’t afraid to push you out of your comfort zone..",
   "start_url": "/",
   "display": "standalone",
   "scope": "/",

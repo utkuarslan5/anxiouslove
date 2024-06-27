@@ -84,6 +84,7 @@ export const IntroScreen = ({
             height="50px"
             borderRadius="full"
             bg="black"
+            boxShadow="0 2px 4px rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.15)"
           >
             <Play color="white" size={24} />
           </Button>

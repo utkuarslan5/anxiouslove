@@ -2,7 +2,7 @@ app anxiouslove {
   wasp: {
     version: "^0.13.0"
   },
-  title: "Anxious Love",
+  title: "Secret Friend",
   head: [
     "<link rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\" />",
     // "<script defer data-domain=\"demo.anxiouslove.me\" src=\"https://plausible.io/js/script.js\"></script>",

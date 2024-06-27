@@ -59,14 +59,14 @@ export const ChatBot = () => {
 
   const config: VoiceProviderProps = {
     hostname: "api.hume.ai",
-    reconnectAttempts: 30,
+    reconnectAttempts: 100,
     debug: import.meta.env.NODE_ENV === "development",
     auth: {
       type: "accessToken",
       value: accessToken.accessToken,
     },
     configId: "11df331e-ee63-4459-ba66-2ca2dee47f81",
-    configVersion: 18,
+    configVersion: 30,
     resumedChatGroupId: user?.chatGroupId ?? undefined,
   };
 
@@ -82,7 +82,7 @@ export const ChatBot = () => {
         onClose={(e) => {
           posthog.capture("socket_closed", { event: e });
         }}
-        messageHistoryLimit={999}
+        messageHistoryLimit={9999}
       >
         <Views />
       </VoiceProvider>

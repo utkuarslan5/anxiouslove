@@ -14,8 +14,8 @@ export const ConversationScreen = () => {
 
   return (
     <Box>
-      {/* <LastVoiceMessage lastVoiceMessage={lastVoiceMessage} />
-      {!lastUserMessage ? <WaitingPrompt /> : null} */}
+      {/* <LastVoiceMessage lastVoiceMessage={lastVoiceMessage} /> */}
+      {/* {!lastUserMessage ? <WaitingPrompt /> : null} */}
       <Box
         position="absolute"
         top="33%"
