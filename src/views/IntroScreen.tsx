@@ -83,10 +83,10 @@ export const IntroScreen = ({
             width="50px"
             height="50px"
             borderRadius="full"
-            bg="black"
+            bg="white"
             boxShadow="0 2px 4px rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.15)"
           >
-            <Play color="white" size={24} />
+            <Play color="black" size={24} />
           </Button>
         </Stack>
       </VStack>

@@ -2,7 +2,7 @@ app anxiouslove {
   wasp: {
     version: "^0.13.0"
   },
-  title: "Secret Friend",
+  title: "secretfriend",
   head: [
     "<link rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\" />",
     // "<script defer data-domain=\"demo.anxiouslove.me\" src=\"https://plausible.io/js/script.js\"></script>",
@@ -49,6 +49,12 @@ page MainPage {
   component: import { MainPage } from "@src/MainPage"
 }
 
+route GfRouTe { path: "/sexy", to: GFPage }
+page GFPage {
+  authRequired: false,
+  component: import { GFPage } from "@src/GFPage"
+}
+
 route LoginRoute { path: "/login", to: LoginPage }
 page LoginPage {
   component: import { LoginPage } from "@src/auth/LoginPage"
@@ -59,9 +65,28 @@ page SignupPage {
   component: import { SignupPage } from "@src/auth/SignupPage"
 }
 
+route AdminRoute { path: "/admin", to: AdminPage }
+page AdminPage {
+  authRequired: true,
+  component: import { AdminPage } from "@src/AdminPage"
+}
 
 query getAccessToken {
   fn: import { getAccessToken } from "@src/tasks/queries",
+  entities: [User]
+}
+query getChatGroups {
+  fn: import { getChatGroups } from "@src/tasks/queries",
+  entities: [User]
+}
+
+query getChats {
+  fn: import { getChats } from "@src/tasks/queries",
+  entities: [User]
+}
+
+query getChatEvents {
+  fn: import { getChatEvents } from "@src/tasks/queries",
   entities: [User]
 }
 

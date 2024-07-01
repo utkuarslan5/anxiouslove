@@ -22,7 +22,7 @@ export const generateContextMessage = () => {
 
   const circadianContext = getCircadianContext(now.getHours());
 
-  return `Hi. It's ${formattedDate} and ${formattedTime} in the ${circadianContext}. How's it going, baby?`;
+  return `Hey. It's ${formattedDate} and ${formattedTime} in the ${circadianContext}. How's it going, baby?`;
 };
 
 function getCircadianContext(hour: number) {
