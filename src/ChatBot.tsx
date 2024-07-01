@@ -1,47 +1,40 @@
 import React, { ComponentProps, useState } from "react";
-import { type AuthUser, getUsername } from "wasp/auth";
-import { logout } from "wasp/client/auth";
-import { getHumeConfig, useQuery } from "wasp/client/operations";
+import { getAccessToken, useQuery, useAction, addChatGroupId } from "wasp/client/operations";
 import { parentDispatch } from "./utils/parentDispatch";
-import { MessageListener } from "./components/MessageListener";
 import { Views } from "./views/Views";
 import { TRANSCRIPT_MESSAGE_ACTION } from "@humeai/voice-embed-react";
-import { VoiceProvider } from "@humeai/voice-react";
-import { AnimatePresence } from "framer-motion";
-import { Box } from "@chakra-ui/react";
+import { VoiceProvider, VoiceProviderProps } from "@humeai/voice-react";
+import { Box, Button, Stack } from "@chakra-ui/react";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 import useMessagesStore, { addMessageToStore } from "./store/messagesStore";
-import {
-  UserTranscriptMessage,
-  AssistantTranscriptMessage,
-} from "@humeai/voice";
+import { useConfigStore } from "./store/config";
+import { useAuth } from "wasp/client/auth";
+import AnimatedBackdrop from "./components/WebGLBackdrop/AnimatedBackdrop";
+import { UserTranscriptMessage, AssistantTranscriptMessage } from "@humeai/voice";
+import { Play } from "lucide-react";
+import "./Main.css"; // Ensure you import your CSS file
 
-if (typeof window !== "undefined") {
-  posthog.init("phc_QWCQnocWvXO4UW30UUmZusN3OoPwucgo3VELxKq9AOR", {
-    api_host: "https://eu.i.posthog.com",
-    loaded: (posthog) => {
-      if (import.meta.env.NODE_ENV === "development") posthog.debug(); // debug mode in development
-    },
-    capture_pageview: true,
-    disable_session_recording: false,
-    enable_recording_console_log: true,
-    property_blacklist: [],
-  });
-  posthog.capture("$pageview");
+interface ChatBotProps {
+  configId: string;
+  configVersion: number | undefined;
+  className?: string; // Add className prop for custom styling
 }
 
-
-export const ChatBot = () => {
-  const { data: humeConfig } = useQuery(getHumeConfig);
-  const messages = useMessagesStore((state) => state.messages);
+export const ChatBot: React.FC<ChatBotProps> = ({
+  configId,
+  configVersion,
+  className,
+}) => {
+  const { data: accessToken } = useQuery(getAccessToken);
+  const { data: user } = useAuth();
+  const addChatGroupIdFn = useAction(addChatGroupId);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const dispatchMessage: ComponentProps<typeof VoiceProvider>["onMessage"] = (
     message
   ) => {
-    posthog.capture("message_received", {
-      message,
-    });
+    posthog.capture("message_received", { message });
 
     if (
       message.type === "user_message" ||
@@ -50,29 +43,77 @@ export const ChatBot = () => {
       addMessageToStore(message);
       parentDispatch(TRANSCRIPT_MESSAGE_ACTION(message));
     }
+
+    if (message.type === "chat_metadata") {
+      if (user && !user.chatGroupId) {
+        addChatGroupIdFn({ chatGroupId: message.chat_group_id });
+      }
+    }
+  };
+
+  if (!accessToken) {
+    return (
+      <Stack
+        direction={["row"]}
+        spacing={4}
+        align="center"
+        position="absolute"
+        bottom="33%"
+        left="50%"
+        transform="translateX(-50%)"
+      >
+        <Button
+          isLoading
+          colorScheme="blackAlpha"
+          variant="solid"
+          width="50px"
+          height="50px"
+          borderRadius="full"
+          bg="black"
+          boxShadow="0 2px 4px rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.15)"
+          _loading={{
+            bg: "black",
+            color: "white",
+            opacity: 1,
+          }}
+        >
+          <Play color="white" size={24} />
+        </Button>
+      </Stack>
+    );
+  }
+
+  const config: VoiceProviderProps = {
+    hostname: "api.hume.ai",
+    reconnectAttempts: 100,
+    debug: import.meta.env.NODE_ENV === "development",
+    auth: {
+      type: "accessToken",
+      value: accessToken.accessToken,
+    },
+    configId: configId,
+    configVersion: configVersion,
+    resumedChatGroupId: user?.chatGroupId ?? undefined,
   };
 
   return (
     <PostHogProvider client={posthog}>
-      <Box>
+      <div className={className}>
         <VoiceProvider
-          auth={{
-            type: "accessToken",
-            value: humeConfig?.accessToken || "",
-          }}
+          {...config}
           onMessage={dispatchMessage}
-          configId={"b14e74c9-7854-40da-bfdd-7ed07d229c91"}
-          configVersion={54}
           onError={(err) => {
             posthog.capture("api_error", { error: err });
+            console.error("VoiceProvider error:", err);
           }}
           onClose={(e) => {
             posthog.capture("socket_closed", { event: e });
           }}
+          messageHistoryLimit={9999}
         >
-          <Views/>
+          <Views />
         </VoiceProvider>
-      </Box>
+      </div>
     </PostHogProvider>
   );
 };

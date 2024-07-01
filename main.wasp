@@ -2,51 +2,57 @@ app anxiouslove {
   wasp: {
     version: "^0.13.0"
   },
-  title: "Anxious Love",
+  title: "secretfriend",
   head: [
     "<link rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\" />",
-    "<script async src=\"https://js.stripe.com/v3/buy-button.js\"></script>",
-    "<script defer data-domain=\"demo.anxiouslove.me\" src=\"https://plausible.io/js/script.js\"></script>",
-    "<script async src=\"https://tally.so/widgets/embed.js\"></script>"
+    // "<script defer data-domain=\"demo.anxiouslove.me\" src=\"https://plausible.io/js/script.js\"></script>",
+    "<link rel=\"manifest\" href=\"/manifest.json\">"
   ],
   client: {
     rootComponent: import { Layout } from "@src/Layout.tsx",
   },
   db: {
     system: PostgreSQL,
+    prisma: {
+      clientPreviewFeatures: ["extendedWhereUnique"]
+    },
+    seeds: [
+      import { resetAll } from "@src/scripts.js",
+    ]
   },
   auth: {
     userEntity: User,
     methods: {
       usernameAndPassword: {}, // This is a very naive implementation, use 'email' in production instead
-      //google: {}, // https://wasp-lang.dev/docs/integrations/google
+      // google: {}, // https://wasp-lang.dev/docs/integrations/google
       //gitHub: {}, // https://wasp-lang.dev/docs/integrations/github
-      //email: {} // https://wasp-lang.dev/docs/guides/email-auth
+      // email: {} // https://wasp-lang.dev/docs/guides/email-auth
     },
     onAuthFailedRedirectTo: "/",
   }
 }
+
 
 // Use Prisma Schema Language (PSL) to define our entities: https://www.prisma.io/docs/concepts/components/prisma-schema
 // Run `wasp db migrate-dev` in the CLI to create the database tables
 // Then run `wasp db studio` to open Prisma Studio and view your db models
 entity User {=psl
   id          Int     @id @default(autoincrement())
-  tasks       Task[]
+  chatGroupId String?
 psl=}
 
-entity Task {=psl
-  id          Int     @id @default(autoincrement())
-  description String
-  isDone      Boolean @default(false)
-  user        User   @relation(fields: [userId], references: [id])
-  userId      Int
-psl=}
+
 
 route RootRoute { path: "/", to: MainPage }
 page MainPage {
   authRequired: false,
   component: import { MainPage } from "@src/MainPage"
+}
+
+route GfRouTe { path: "/sexy", to: GFPage }
+page GFPage {
+  authRequired: false,
+  component: import { GFPage } from "@src/GFPage"
 }
 
 route LoginRoute { path: "/login", to: LoginPage }
@@ -59,12 +65,38 @@ page SignupPage {
   component: import { SignupPage } from "@src/auth/SignupPage"
 }
 
+route AdminRoute { path: "/admin", to: AdminPage }
+page AdminPage {
+  authRequired: true,
+  component: import { AdminPage } from "@src/AdminPage"
+}
 
-query getHumeConfig {
-  fn: import { getHumeConfig } from "@src/tasks/queries",
+query getAccessToken {
+  fn: import { getAccessToken } from "@src/tasks/queries",
+  entities: [User]
+}
+query getChatGroups {
+  fn: import { getChatGroups } from "@src/tasks/queries",
+  entities: [User]
+}
+
+query getChats {
+  fn: import { getChats } from "@src/tasks/queries",
+  entities: [User]
+}
+
+query getChatEvents {
+  fn: import { getChatEvents } from "@src/tasks/queries",
+  entities: [User]
 }
 
 
 action sendEmailWithImage {
   fn: import { sendEmailWithImage } from "@src/tasks/actions",
+  entities: [User]
+}
+
+action addChatGroupId {
+  fn: import { addChatGroupId } from "@src/tasks/actions",
+  entities: [User]
 }

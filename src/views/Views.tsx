@@ -6,67 +6,58 @@ import { EndScreen } from "./EndScreen";
 import { useVoice } from "@humeai/voice-react";
 import { FC, useState } from "react";
 import { match } from "ts-pattern";
-import { Box, Center } from "@chakra-ui/react";
+import { generateContextMessage } from "../utils";
 
 export type ViewsProps = Record<never, never>;
 
 export const Views: FC<ViewsProps> = () => {
-  const { connect, disconnect, status, error } = useVoice();
+  const { connect, disconnect, status, error, sendUserInput } = useVoice();
   const [conversationEnded, setConversationEnded] = useState(false);
 
   const onConnect = () => {
     void connect()
-      .then(() => {})
+      .then(() => {
+        setTimeout(() => {
+          const contextMessage = generateContextMessage();
+          sendUserInput(contextMessage);
+          console.log(contextMessage);
+        }, 500);
+      })
       .catch((e) => {
         console.error(e);
       });
   };
 
   return (
-    <Center h="100vh">
-      <ConversationFrame
-        onClose={() => {
-          // close();
-          disconnect();
-          setConversationEnded(true);
-        }}
-      >
-        {match(status.value)
-          .with("error", () => {
-            return (
-              <Box>
-                <ErrorScreen
-                  errorType={error?.type ?? ("unknown" as const)}
-                  errorReason={error?.message ?? "Unknown"}
-                  onConnect={onConnect}
-                  isConnecting={status.value === "connecting"}
-                />
-              </Box>
-            );
-          })
-          .with("disconnected", "connecting", () => {
-            return conversationEnded ? (
-              <Box>
-                <EndScreen onTryAgain={() => setConversationEnded(false)} />
-              </Box>
-            ) : (
-              <Box>
-                <IntroScreen
-                  onConnect={onConnect}
-                  isConnecting={status.value === "connecting"}
-                />
-              </Box>
-            );
-          })
-          .with("connected", () => {
-            return (
-              <Box>
-                <ConversationScreen />
-              </Box>
-            );
-          })
-          .exhaustive()}
-      </ConversationFrame>
-    </Center>
+    <ConversationFrame
+      onClose={() => {
+        disconnect();
+        setConversationEnded(true);
+      }}
+    >
+      {match(status.value)
+        .with("error", () => {
+          return (
+            <ErrorScreen
+              errorType={error?.type ?? ("unknown" as const)}
+              errorReason={error?.message ?? "Unknown"}
+              onConnect={onConnect}
+              isConnecting={status.value === "connecting"}
+            />
+          );
+        })
+        .with("disconnected", "connecting", () => {
+          return (
+            <IntroScreen
+              onConnect={onConnect}
+              isConnecting={status.value === "connecting"}
+            />
+          );
+        })
+        .with("connected", () => {
+          return <ConversationScreen />;
+        })
+        .exhaustive()}
+    </ConversationFrame>
   );
 };

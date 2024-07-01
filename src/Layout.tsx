@@ -1,10 +1,9 @@
-import { Link } from "wasp/client/router";
-import { useAuth, logout } from "wasp/client/auth";
-import { getUsername } from "wasp/auth";
-import { useState, useRef, useEffect, ReactNode } from "react";
+import { useEffect, ReactNode } from "react";
 import {
   ChakraProvider,
+  Flex,
   Box,
+  Container,
 } from "@chakra-ui/react";
 import "./Main.css";
 
@@ -13,9 +12,28 @@ interface LayoutProps {
 }
 
 export const Layout = ({ children }: LayoutProps) => {
+  useEffect(() => {
+    // Register the service worker
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").then(
+          (registration) => {
+            console.log(
+              "ServiceWorker registration successful with scope: ",
+              registration.scope
+            );
+          },
+          (err) => {
+            console.log("ServiceWorker registration failed: ", err);
+          }
+        );
+      });
+    }
+  }, []);
+
   return (
     <ChakraProvider>
-      <Box>{children}</Box>
+          {children}
     </ChakraProvider>
   );
 };

@@ -1,7 +1,6 @@
-import { type Task } from "wasp/entities";
 import { HttpError } from "wasp/server";
-import { type SendEmailWithImage } from "wasp/server/operations";
-import fetch from "node-fetch";
+import { type SendEmailWithImage, type AddChatGroupId } from "wasp/server/operations";
+import axios from "axios";
 
 type SendEmailArgs = {
   email: string;
@@ -55,25 +54,41 @@ export const sendEmailWithImage: SendEmailWithImage<
     ],
   };
 
-
-  const response = await fetch("https://api.mailersend.com/v1/email", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Requested-With": "XMLHttpRequest",
-      Authorization:
-        `Bearer ${process.env.MAILERSEND_BEARER_KEY}`,
-    },
-    body: JSON.stringify(requestBody),
-  });
-
-  if (!response.ok) {
-    const responseBody = await response.text();
-    console.log("Response Status:", response.status);
-    console.log("Response Body:", responseBody);
+  try {
+    const response = await axios.post(
+      "https://api.mailersend.com/v1/email",
+      requestBody,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+          Authorization: `Bearer ${process.env.MAILERSEND_BEARER_KEY}`,
+        },
+      }
+    );
+  } catch (error: any) {
+    console.log("Response Status:", error.response.status);
+    console.log("Response Body:", error.response.data);
     throw new HttpError(
-      response.status,
-      `Failed to send email: ${responseBody}`
+      error.response.status,
+      `Failed to send email: ${error.response.data}`
     );
   }
+};
+type AddChatGroupIdArgs = {
+  chatGroupId: string;
+};
+export const addChatGroupId: AddChatGroupId<AddChatGroupIdArgs, void> = async (
+  { chatGroupId },
+  context
+) => {
+  const user = context.user;
+  if (!user) {
+    throw new HttpError(404, "User not found");
+  }
+
+  await context.entities.User.update({
+    where: { id: user.id },
+    data: { chatGroupId: chatGroupId },
+  });
 };

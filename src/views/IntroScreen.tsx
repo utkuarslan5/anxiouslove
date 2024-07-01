@@ -1,9 +1,28 @@
-import { Button } from "../components/Button";
+import {
+  Button,
+  useToast,
+  Box,
+  Text,
+  VStack,
+  Center,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalCloseButton,
+  ModalBody,
+  useDisclosure,
+  useBreakpointValue,
+  HStack,
+  Stack,
+  IconButton,
+} from "@chakra-ui/react";
 import { CircledText } from "../components/CircledText";
-import { motion } from "framer-motion";
 import { cn } from "../utils";
-import { useToast } from "@chakra-ui/react";
 import React, { useEffect } from "react";
+import { useAuth, logout } from "wasp/client/auth";
+import { LogIn, LogOut, Play } from "lucide-react";
+import { LoginPage } from "../auth/LoginPage"; // Import the LoginPage
+import AnimatedBackdrop  from "../components/WebGLBackdrop/AnimatedBackdrop";
 
 export const IntroScreen = ({
   onConnect,
@@ -12,70 +31,65 @@ export const IntroScreen = ({
   onConnect: () => void;
   isConnecting: boolean;
 }) => {
-  return (
-    <motion.div
-      className={cn(
-        "flex flex-col items-center justify-center h-screen px-12 gap-8"
-      )}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1, translateY: -4 }}
-      transition={{ duration: 2 }}
-    >
-      {
-        <>
-          <h2 className="text-center text-3xl">
-            
-            <CircledText>
-              Anxiety
-            </CircledText>
-            <span> 
-              -AI  Companion
-            </span>
-            <br />
-          </h2>
-          <p className="text-center text-xl text-gray-500">
-            Hi, I'm Eli&mdash;I'm here to listen and soothe to your anxiety.
-          </p>
+  const { data: user } = useAuth();
+  const { isOpen, onOpen, onClose } = useDisclosure(); // Chakra UI hook to manage modal state
 
-          <div className="w-fit">
-            <motion.div
-              variants={{
-                initial: {
-                  y: "100%",
-                  opacity: 0,
-                },
-                enter: {
-                  y: 0,
-                  opacity: 1,
-                  transition: {
-                    opacity: {
-                      duration: 0.7,
-                      ease: "easeInOut",
-                    },
-                    y: {
-                      duration: 1.1,
-                      ease: "easeInOut",
-                    },
-                  },
-                },
-                exit: {
-                  opacity: 0,
-                },
-              }}
-            >
-              <Button
-                onClick={() => {
-                  onConnect();
-                }}
-                isLoading={isConnecting}
-                loadingText={"Connecting..."}
-              >
-                Start Demo
-              </Button>
-            </motion.div>
-          </div>
-        </>
-      }
-    </motion.div>
+  return (
+    <>
+      <AnimatedBackdrop />
+      <VStack spacing={8}>
+        <Box position="absolute" top={4} right={4}>
+          {user ? (
+            <IconButton
+              onClick={logout}
+              variant="ghost"
+              aria-label="Log out"
+              icon={<LogOut color="gray" size={24} />}
+            />
+          ) : (
+            <>
+              <IconButton
+                onClick={onOpen}
+                variant="ghost"
+                aria-label="Log in"
+                icon={<LogIn color="gray" size={24} />}
+              />
+              <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    <LoginPage />
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
+            </>
+          )}
+        </Box>
+
+        <Stack
+          direction={["row"]}
+          spacing={4}
+          align="center"
+          position="absolute"
+          bottom="33%"
+        >
+          <Button
+            onClick={onConnect}
+            isLoading={isConnecting}
+            // loadingText={"Connecting..."}
+            colorScheme="blackAlpha"
+            variant="solid"
+            width="50px"
+            height="50px"
+            borderRadius="full"
+            bg="white"
+            boxShadow="0 2px 4px rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.15)"
+          >
+            <Play color="black" size={24} />
+          </Button>
+        </Stack>
+      </VStack>
+    </>
   );
 };

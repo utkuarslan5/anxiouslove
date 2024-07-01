@@ -1,3 +1,5 @@
+/* src/Main.css */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -151,4 +153,16 @@ body {
     border: 3.5px solid transparent;
     background-clip: content-box;
   }
+}
+
+.girlfriend-background {
+  background-image: url('/girl.png'); /* Replace with the path to your image */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: black;
+  height: 100vh;
+  width: 100vw;
+  height: 100vh;
+  width: 100vw;
 }
