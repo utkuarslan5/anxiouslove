@@ -54,7 +54,6 @@ export const getChatGroups = async (
         ascending_order: ascendingOrder,
       },
     });
-    console.log("Chat groups retrieved successfully");
     return response.data;
   } catch (error) {
     console.error("Error retrieving chat groups:", error);
@@ -79,7 +78,6 @@ export const getChats = async (
         ascending_order: ascendingOrder,
       },
     });
-    console.log("Chats retrieved successfully");
     return response.data;
   } catch (error) {
     console.error("Error retrieving chats:", error);
@@ -90,8 +88,8 @@ export const getChats = async (
 export const getChatEvents = async (
   chatGroupId: string,
   pageNumber: number = 0,
-  pageSize: number = 10,
-  ascendingOrder: boolean = false
+  pageSize: number = 100,
+  ascendingOrder: boolean = true
 ) => {
   try {
     const apiKey = process.env.HUME_API_KEY || "";
@@ -108,7 +106,6 @@ export const getChatEvents = async (
         },
       }
     );
-    console.log("Chat events retrieved successfully");
     return response.data;
   } catch (error) {
     console.error(
@@ -118,3 +115,4 @@ export const getChatEvents = async (
     throw new HttpError(500, "Failed to retrieve chat events");
   }
 };
+
