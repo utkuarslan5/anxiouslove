@@ -20,7 +20,7 @@ export default function Chat({ chatGroupId }: { chatGroupId: string }) {
 
   useEffect(() => {
     if (chatEventsData) {
-      console.log('Fetched Messages:', chatEventsData.events_page);
+      // console.log('Fetched Messages:', chatEventsData.events_page);
       const fetchedMessages = chatEventsData.events_page;
       setMessages(fetchedMessages);
       setIsMessagesLoading(false);
@@ -37,9 +37,9 @@ export default function Chat({ chatGroupId }: { chatGroupId: string }) {
 
   return (
     <div
-      // className={
-      //   "relative grow flex flex-col mx-auto w-full overflow-hidden h-[0px]"
-      // }
+      className={
+        "relative grow flex flex-col mx-auto w-full overflow-hidden"
+      }
     >
       <Messages ref={ref} messages={messages} />
     </div>

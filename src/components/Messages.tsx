@@ -10,7 +10,7 @@ const Messages = forwardRef<
   ComponentRef<typeof motion.div>,
   { messages: any[] } // Adjust the type as needed
 >(function Messages({ messages }, ref) {
-  console.log(messages);
+  // console.log(messages);
   return (
     <Box
       as={motion.div}

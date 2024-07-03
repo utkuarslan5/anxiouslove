@@ -39,11 +39,13 @@ export const getAccessToken = (async (args, context) => {
 
 export const getChatGroups = async (
   pageNumber: number = 0,
-  pageSize: number = 10,
+  pageSize: number = 100,
   ascendingOrder: boolean = false
 ) => {
   try {
     const apiKey = process.env.HUME_API_KEY || "";
+    // console.log(`Fetching chat groups with pageNumber: ${pageNumber}, pageSize: ${pageSize}, ascendingOrder: ${ascendingOrder}`);
+    
     const response = await axios.get("https://api.hume.ai/v0/evi/chat_groups", {
       headers: {
         "X-Hume-Api-Key": apiKey,
@@ -54,12 +56,15 @@ export const getChatGroups = async (
         ascending_order: ascendingOrder,
       },
     });
+
+    // console.log("Chat groups response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error retrieving chat groups:", error);
     throw new HttpError(500, "Failed to retrieve chat groups");
   }
 };
+
 
 export const getChats = async (
   pageNumber: number = 0,

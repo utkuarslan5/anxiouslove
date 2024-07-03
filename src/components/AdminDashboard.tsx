@@ -6,31 +6,45 @@ import {
   Heading,
   Spinner,
   Text,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionIcon,
   Flex,
+  Button,
+  List,
+  ListItem,
 } from "@chakra-ui/react";
 import Chat from "./Chat";
 
 const AdminDashboard: React.FC = () => {
-  const { data: chatGroupsData, isLoading: chatGroupsLoading } = useQuery(getChatGroups);
+  const [page, setPage] = useState(0);
+  const { data: chatGroupsData, isLoading: chatGroupsLoading } = useQuery(
+    getChatGroups,
+    page,
+    10
+  );
   const [chatGroups, setChatGroups] = useState<any[]>([]);
-  const [selectedChatGroupId, setSelectedChatGroupId] = useState<string | null>(null);
+  const [selectedChatGroupId, setSelectedChatGroupId] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     if (chatGroupsData) {
-      setChatGroups(chatGroupsData.chat_groups_page);
+      // console.log("Retrieved chat groups:", chatGroupsData.chat_groups_page);
+      setChatGroups((prevChatGroups) => [
+        ...prevChatGroups,
+        ...chatGroupsData.chat_groups_page,
+      ]);
     }
   }, [chatGroupsData]);
 
+  const loadMoreChatGroups = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
+
   return (
     <Flex height="100vh">
-      <Box width="300px" p={5} borderRight="1px solid #e2e8f0">
-        <Heading size="lg" mb={5}>
+      <Box width="300px" p={5} borderRight="1px solid #e2e8f0" overflowY="auto">
+        {/* <Heading size="lg" mb={5}>
           Admin Dashboard
-        </Heading>
+        </Heading> */}
         {chatGroupsLoading ? (
           <Spinner />
         ) : (
@@ -38,18 +52,24 @@ const AdminDashboard: React.FC = () => {
             <Heading size="md" mb={3}>
               Chat Groups
             </Heading>
-            <Accordion allowMultiple>
-              {chatGroups.map((group) => (
-                <AccordionItem key={group.id}>
-                  <AccordionButton onClick={() => setSelectedChatGroupId(group.id)}>
-                    <Box flex="1" textAlign="left">
-                      <Text fontWeight="bold">{group.id}</Text>
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                </AccordionItem>
+            <List spacing={3}>
+              {chatGroups.map((group, index) => (
+                <ListItem
+                  key={group.id + index}
+                  onClick={() => setSelectedChatGroupId(group.id)}
+                  cursor="pointer"
+                  p={2}
+                  borderWidth="1px"
+                  borderRadius="md"
+                  _hover={{ bg: "gray.100" }}
+                >
+                  <Text fontWeight="bold">{group.id}</Text>
+                </ListItem>
               ))}
-            </Accordion>
+            </List>
+            <Button onClick={loadMoreChatGroups} mt={3}>
+              Load More
+            </Button>
           </Box>
         )}
       </Box>

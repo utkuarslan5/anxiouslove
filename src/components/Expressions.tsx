@@ -1,8 +1,8 @@
 "use client";
 import { isExpressionColor } from "../utils/isExpressionColor";
 import { expressionColors } from "expression-colors";
-import { motion } from "framer-motion";
 import { CSSProperties } from "react";
+import { motion } from "framer-motion";
 import * as R from "remeda";
 
 export default function Expressions({
@@ -18,6 +18,13 @@ export default function Expressions({
     R.take(3)
   );
 
+  const getColor = (key: string) => {
+    if (isExpressionColor(key)) {
+      return expressionColors[key].hex;
+    }
+    return "#D3D3D3"; // Default color if the key is not found
+  };
+
   return (
     <div
       className={
@@ -32,25 +39,15 @@ export default function Expressions({
             <div className={"font-medium truncate"}>{key}</div>
             <div className={"tabular-nums opacity-50"}>{value.toFixed(2)}</div>
           </div>
-          <div
-            className={"relative h-1"}
-            style={
-              {
-                "--bg": isExpressionColor(key)
-                  ? expressionColors[key]
-                  : "var(--bg)",
-              } as CSSProperties
-            }
-          >
+          <div className={"relative h-1"}>
             <div
               className={
-                "absolute top-0 left-0 size-full rounded-full opacity-10 bg-[var(--bg)]"
+                "absolute top-0 left-0 size-full rounded-full opacity-10"
               }
+              style={{ backgroundColor: getColor(key) }}
             />
             <motion.div
-              className={
-                "absolute top-0 left-0 h-full bg-[var(--bg)] rounded-full"
-              }
+              className={"absolute top-0 left-0 h-full rounded-full"}
               initial={{ width: 0 }}
               animate={{
                 width: `${R.pipe(
@@ -58,6 +55,7 @@ export default function Expressions({
                   R.clamp({ min: 0, max: 1 }),
                   (value) => `${value * 100}%`
                 )}`,
+                backgroundColor: getColor(key),
               }}
             />
           </div>
